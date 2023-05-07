@@ -31,6 +31,15 @@ class SignIn : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+
+        }
+
         email = binding.email
         masterPassword = binding.masterPassword
         signInButton = binding.signIn
@@ -47,6 +56,15 @@ class SignIn : AppCompatActivity() {
         binding.goToSignUp.setOnClickListener {
 
             val intent = Intent(this, SignUp::class.java)
+            intent.putExtra("email", email.text.toString().trim())
+            startActivity(intent)
+            finish()
+
+        }
+
+        binding.goToForgotPassword.setOnClickListener {
+
+            val intent = Intent(this, ForgotPassword::class.java)
             intent.putExtra("email", email.text.toString().trim())
             startActivity(intent)
             finish()
@@ -115,9 +133,10 @@ class SignIn : AppCompatActivity() {
 
                             Toast.makeText(this, "Sign in successful $emailText", Toast.LENGTH_SHORT).show()
 
-                            val intent = Intent(this, HomeActivity::class.java)
+                            val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                             finish()
+
                         } else {
                             try {
                                 throw task.exception!!

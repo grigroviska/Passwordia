@@ -72,11 +72,14 @@
             android:text="Forgot your login details?"/>
 
         <TextView
+            android:id="@+id/goToForgotPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
+            android:clickable="true"
             android:textSize="16sp"
-            android:text="Sign Up"/>
+            android:textStyle="bold"
+            android:text="Forgot My Password"/>
 
     </LinearLayout>
 
