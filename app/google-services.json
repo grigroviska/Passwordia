@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "420039056249",
+    "project_id": "passwordia",
+    "storage_bucket": "passwordia.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420039056249:android:73c52b0b98f8f08d51eda8",
+        "android_client_info": {
+          "package_name": "com.grigroviska.passwordia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "420039056249-1cjcreig48nrghs3sq6a6jmnf6qb1i45.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3mFyxVLRWaymXbE_m6_efmSiSEFLEq10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "420039056249-1cjcreig48nrghs3sq6a6jmnf6qb1i45.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
