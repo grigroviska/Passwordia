@@ -26,7 +26,13 @@ class SignUpPassword : Fragment() {
         signUpButton = binding.signUp
 
         signUpButton.setOnClickListener {
-            val passwordText = password.text.toString().trim()
+            val email = arguments?.getString("email")
+
+            val confirmationPasswordFragment = ConfirmationPassword.newInstance(email.toString())
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.frameLayout, confirmationPasswordFragment)
+                .addToBackStack(null)
+                .commit()
         }
 
         password.addTextChangedListener(object : TextWatcher {
@@ -43,7 +49,7 @@ class SignUpPassword : Fragment() {
     }
 
     private fun checkPasswordStrength(password: String) {
-
+        // Your implementation for checking password strength
     }
 
     companion object {
