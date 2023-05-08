@@ -3,7 +3,6 @@ package com.grigroviska.passwordia
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
 import com.grigroviska.passwordia.databinding.ActivityHomeBinding
 
 class HomeActivity : AppCompatActivity() {
