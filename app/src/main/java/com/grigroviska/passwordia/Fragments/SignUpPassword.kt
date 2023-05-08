@@ -27,29 +27,52 @@ class SignUpPassword : Fragment() {
 
         signUpButton.setOnClickListener {
             val email = arguments?.getString("email")
+            val password = password.text.toString()
 
-            val confirmationPasswordFragment = ConfirmationPassword.newInstance(email.toString())
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.frameLayout, confirmationPasswordFragment)
-                .addToBackStack(null)
-                .commit()
+            if (getPasswordStrength(password) == "I like the password" || getPasswordStrength(password) == "I fell in love with the password") {
+                val confirmationPasswordFragment =
+                    ConfirmationPassword.newInstance(email.toString(), password)
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.frameLayout, confirmationPasswordFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
 
         password.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                binding.passwordLayout.helperText = null
+            }
 
             override fun afterTextChanged(p0: Editable?) {
-                checkPasswordStrength(p0.toString())
+                getPasswordStrength(p0.toString())
             }
         })
 
         return view
     }
 
-    private fun checkPasswordStrength(password: String) {
-        // Your implementation for checking password strength
+    private fun getPasswordStrength(password: String) : String{
+        val length = password.length
+        val hasUpperCase = password.any { it.isUpperCase() }
+        val hasLowerCase = password.any { it.isLowerCase() }
+        val hasDigit = password.any { it.isDigit() }
+        val hasSpecialChar = password.any { !it.isLetterOrDigit() }
+
+        val strength = when {
+            length < 1 -> ""
+            length < 6 -> "I pretend not to see this password"
+            length < 8 -> "I open my eyes a little go ahead"
+            length < 10 && hasUpperCase && hasLowerCase && (hasDigit || hasSpecialChar) -> "I like the password"
+            length >= 10 && hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar -> "I fell in love with the password"
+            else ->  "I open my eyes a little go ahead"
+        }
+
+        binding.passwordLayout.helperText = strength
+
+        return strength
     }
 
     companion object {
