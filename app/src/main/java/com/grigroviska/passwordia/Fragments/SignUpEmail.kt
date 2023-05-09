@@ -33,13 +33,27 @@ class SignUpEmail : Fragment() {
         nextButton.setOnClickListener {
             val emailText = email.text.toString().trim()
             if (android.util.Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
-                val passwordFragment = SignUpPassword.newInstance(emailText)
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.frameLayout, passwordFragment)
-                    .addToBackStack(null)
-                    .commit()
+                val auth = FirebaseAuth.getInstance()
+
+                auth.fetchSignInMethodsForEmail(emailText)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val signInMethods = task.result?.signInMethods
+                            if (!signInMethods.isNullOrEmpty()) {
+                                binding.emailLayout.error = "This email address is already in use."
+                            } else {
+                                val passwordFragment = SignUpPassword.newInstance(emailText)
+                                requireActivity().supportFragmentManager.beginTransaction()
+                                    .replace(R.id.frameLayout, passwordFragment)
+                                    .addToBackStack(null)
+                                    .commit()
+                            }
+                        } else {
+                            binding.emailLayout.error = "An error occurred while checking the e-mail address."
+                        }
+                    }
             } else {
-                binding.emailLayout.error = "Lütfen geçerli bir e-posta adresi girin."
+                binding.emailLayout.error = "Please enter a valid email address."
             }
         }
 
