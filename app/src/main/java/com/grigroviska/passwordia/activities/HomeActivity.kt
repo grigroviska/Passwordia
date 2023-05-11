@@ -1,4 +1,4 @@
-package com.grigroviska.passwordia
+package com.grigroviska.passwordia.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

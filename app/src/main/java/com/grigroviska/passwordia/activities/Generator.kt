@@ -1,4 +1,4 @@
-package com.grigroviska.passwordia
+package com.grigroviska.passwordia.activities
 
 import android.content.ClipData
 import android.content.ClipboardManager

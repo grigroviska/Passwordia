@@ -14,9 +14,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.grigroviska.passwordia.MainActivity
+import com.grigroviska.passwordia.activities.MainActivity
 import com.grigroviska.passwordia.R
-import com.grigroviska.passwordia.databinding.FragmentForgotPasswordBinding
 import com.grigroviska.passwordia.databinding.FragmentSignInPasswordBinding
 
 

@@ -14,6 +14,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.grigroviska.passwordia.activities.MainActivity
 import com.grigroviska.passwordia.databinding.ActivitySignUpBinding
 
 class SignUp : AppCompatActivity() {

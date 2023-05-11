@@ -1,7 +1,6 @@
 package com.grigroviska.passwordia
 
 import android.content.Intent
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -12,6 +11,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.grigroviska.passwordia.activities.MainActivity
 import com.grigroviska.passwordia.databinding.ActivitySignInBinding
 
 class SignIn : AppCompatActivity() {

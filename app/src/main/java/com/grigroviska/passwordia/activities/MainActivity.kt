@@ -1,4 +1,4 @@
-package com.grigroviska.passwordia
+package com.grigroviska.passwordia.activities
 
 import android.content.Intent
 import android.hardware.biometrics.BiometricManager.Authenticators.BIOMETRIC_STRONG
