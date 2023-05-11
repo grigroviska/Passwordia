@@ -1,4 +1,4 @@
-package com.grigroviska.passwordia.Fragments
+package com.grigroviska.passwordia.fragments
 
 import android.os.Bundle
 import android.text.Editable
@@ -11,7 +11,6 @@ import android.widget.Button
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.grigroviska.passwordia.R
-import com.grigroviska.passwordia.databinding.FragmentSignInPasswordBinding
 import com.grigroviska.passwordia.databinding.FragmentSignUpEmailBinding
 
 class SignUpEmail : Fragment() {

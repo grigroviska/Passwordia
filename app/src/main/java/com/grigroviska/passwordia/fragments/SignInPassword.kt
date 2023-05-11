@@ -1,4 +1,4 @@
-package com.grigroviska.passwordia.Fragments
+package com.grigroviska.passwordia.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,6 +15,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.grigroviska.passwordia.MainActivity
+import com.grigroviska.passwordia.R
+import com.grigroviska.passwordia.databinding.FragmentForgotPasswordBinding
 import com.grigroviska.passwordia.databinding.FragmentSignInPasswordBinding
 
 
@@ -68,6 +70,16 @@ class SignInPassword : Fragment() {
             override fun afterTextChanged(p0: Editable?) {}
 
         })
+
+        binding.goToForgotPassword.setOnClickListener {
+
+            val forgotPasswordFragment = ForgotPassword.newInstance()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.frameLayout, forgotPasswordFragment)
+                .addToBackStack(null)
+                .commit()
+
+        }
 
         return view
     }

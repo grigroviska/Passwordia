@@ -1,4 +1,4 @@
-package com.grigroviska.passwordia.Fragments
+package com.grigroviska.passwordia.fragments
 
 import android.os.Bundle
 import android.text.Editable
@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import com.google.android.material.textfield.TextInputEditText
-import com.grigroviska.passwordia.R
 import com.grigroviska.passwordia.databinding.FragmentConfirmationPasswordBinding
 
 
@@ -49,22 +48,9 @@ class ConfirmationPassword : Fragment() {
             }
         }
 
-        password.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun afterTextChanged(p0: Editable?) {
-                checkPasswordStrength(p0.toString())
-            }
-        })
-
         return view
     }
 
-    private fun checkPasswordStrength(password: String) {
-        // Implement password strength checking logic if needed
-    }
 
     companion object {
         fun newInstance(email: String, password: String): ConfirmationPassword {

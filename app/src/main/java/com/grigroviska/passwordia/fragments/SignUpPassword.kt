@@ -1,4 +1,4 @@
-package com.grigroviska.passwordia.Fragments
+package com.grigroviska.passwordia.fragments
 
 import android.os.Bundle
 import android.text.Editable

@@ -2,7 +2,7 @@ package com.grigroviska.passwordia
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.grigroviska.passwordia.Fragments.SignInEmail
+import com.grigroviska.passwordia.fragments.SignInEmail
 
 class SignMain : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

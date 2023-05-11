@@ -1,4 +1,4 @@
-package com.grigroviska.passwordia.Fragments
+package com.grigroviska.passwordia.fragments
 
 import android.os.Bundle
 import android.text.Editable
@@ -36,7 +36,6 @@ class SignInEmail : Fragment() {
         nextButton.setOnClickListener {
             val emailText = email.text.toString().trim()
             if (android.util.Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
-                binding.emailLayout.helperText = null
                 checkEmailExists(emailText)
             } else {
                 binding.emailLayout.helperText = "Please provide a valid email address."
