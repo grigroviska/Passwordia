@@ -1,5 +1,6 @@
 package com.grigroviska.passwordia.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -8,7 +9,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -16,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.grigroviska.passwordia.activities.MainActivity
 import com.grigroviska.passwordia.R
+import com.grigroviska.passwordia.activities.HomeActivity
 import com.grigroviska.passwordia.databinding.FragmentSignInPasswordBinding
 
 
@@ -46,17 +51,61 @@ class SignInPassword : Fragment() {
         val view = binding.root
 
         auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+
+        password = binding.masterPassword
+        signInButton = binding.signIn
 
         arguments?.let {
             email = it.getString(ARG_EMAIL, "")
         }
 
-        password = binding.masterPassword
-        signInButton = binding.signIn
+        val spinner: Spinner = binding.accounts
+
+        if(currentUser!=null) {
+
+            email = currentUser.email.toString()
+
+        }
+
+        val items = mutableListOf<String>()
+        items.add(email)
+        items.addAll(listOf("Add another account"))
+
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, items)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedItem = items[position]
+                if (selectedItem == "Add another account") {
+                    auth.signOut()
+                    val signInEmailFragment = SignInEmail()
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.frameLayout, signInEmailFragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Hiçbir şey seçilmediğinde yapılacak işlemler
+            }
+        }
 
         signInButton.setOnClickListener {
-            val passwordText = password.text.toString().trim()
-            signInUser(email, passwordText)
+            if(currentUser!=null){
+                val passwordText = password.text.toString().trim()
+                signInUser(currentUser.email.toString(), passwordText)
+
+            }else{
+
+                val passwordText = password.text.toString().trim()
+                signInUser(email, passwordText)
+
+            }
+
         }
 
         password.addTextChangedListener(object : TextWatcher {
@@ -89,9 +138,7 @@ class SignInPassword : Fragment() {
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
                         Toast.makeText(requireContext(), "Sign in successful", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(requireContext(), MainActivity::class.java)
-                        startActivity(intent)
-                        requireActivity().finish()
+                        status()
                     } else {
                         try {
                             throw task.exception!!
@@ -107,5 +154,32 @@ class SignInPassword : Fragment() {
         } else {
             binding.passwordLayout.helperText ="Enter a password"
         }
+    }
+
+    private fun status(){
+        val sharedPreferences = requireContext().getSharedPreferences("Passwordia.EntryType", Context.MODE_PRIVATE)
+        val entryType = sharedPreferences.getString("entry_type", "")
+        if(entryType==""){
+
+            val selectEntryFragment = SelectEntry()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.frameLayout, selectEntryFragment)
+                .addToBackStack(null)
+                .commit()
+
+        }else if(entryType == "biometric"){
+
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+
+        }else{
+
+            val intent = Intent(requireContext(), HomeActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+
+        }
+
     }
 }

@@ -1,5 +1,7 @@
 package com.grigroviska.passwordia.fragments
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.grigroviska.passwordia.R
+import com.grigroviska.passwordia.activities.MainActivity
 import com.grigroviska.passwordia.databinding.FragmentSignInEmailBinding
 
 class SignInEmail : Fragment() {
@@ -28,10 +31,34 @@ class SignInEmail : Fragment() {
         val view = binding.root
 
         auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+
+        val sharedPreferences = requireContext().getSharedPreferences("Passwordia.EntryType", Context.MODE_PRIVATE)
+        val entryType = sharedPreferences.getString("entry_type", "")
 
         email = binding.email
         nextButton = binding.nextPage
         signUpButton = binding.signUp
+
+        if (currentUser != null) {
+            if (entryType == "manuel") {
+                val passwordFragment = SignInPassword.newInstance(email.toString())
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.frameLayout, passwordFragment)
+                    .addToBackStack(null)
+                    .commit()
+            } else if (entryType == "biometric") {
+                val intent = Intent(requireContext(), MainActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+            } else {
+                val selectEntryFragment = SelectEntry()
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.frameLayout, selectEntryFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
 
         nextButton.setOnClickListener {
             val emailText = email.text.toString().trim()
