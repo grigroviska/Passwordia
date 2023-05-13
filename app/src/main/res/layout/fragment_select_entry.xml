@@ -31,9 +31,13 @@
         <RadioButton
             android:id="@+id/manuel_entry"
             android:button="@null"
-            android:background="@drawable/manuel_entry"
+            android:textAlignment="center"
+            android:drawableTop="@drawable/manuel_entry"
             android:layout_width="200dp"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            android:textColor="@drawable/custom_radio_text"
+            android:textSize="20sp"
+            android:text="Manuel Entry"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -47,9 +51,13 @@
         <RadioButton
             android:id="@+id/biometric_entry"
             android:button="@null"
-            android:background="@drawable/fingerprint"
+            android:textAlignment="center"
+            android:drawableTop="@drawable/fingerprint"
             android:layout_width="200dp"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            android:textSize="20sp"
+            android:textColor="@drawable/custom_radio_text"
+            android:text="Biometric Entry"/>
 
 
     </RadioGroup>

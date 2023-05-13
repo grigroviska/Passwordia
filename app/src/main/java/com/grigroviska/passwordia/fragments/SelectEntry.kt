@@ -10,10 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.Toast
+import androidx.biometric.BiometricManager
 import com.grigroviska.passwordia.R
 import com.grigroviska.passwordia.activities.MainActivity
 import com.grigroviska.passwordia.databinding.FragmentSelectEntryBinding
-import com.grigroviska.passwordia.fragments.SignInPassword
 
 class SelectEntry : Fragment() {
 
@@ -29,26 +29,21 @@ class SelectEntry : Fragment() {
 
         val manuelEntryRadioButton: RadioButton = binding.manuelEntry
         val biometricEntryRadioButton: RadioButton = binding.biometricEntry
+        val biometricSupported = checkBiometricSupport()
+        biometricEntryRadioButton.isEnabled = biometricSupported
 
         sharedPreferences = requireContext().getSharedPreferences("Passwordia.EntryType", Context.MODE_PRIVATE)
 
-        val selectedRadioButtonBorder = resources.getDrawable(R.drawable.selected_radio_button_border)
-
         manuelEntryRadioButton.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                buttonView.background = selectedRadioButtonBorder
                 saveEntryType("manuel")
-            } else {
-                buttonView.background = null
             }
         }
 
+
         biometricEntryRadioButton.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                buttonView.background = selectedRadioButtonBorder
                 saveEntryType("biometric")
-            } else {
-                buttonView.background = null
             }
         }
 
@@ -94,4 +89,11 @@ class SelectEntry : Fragment() {
             return Fragment()
         }
     }
+
+    private fun checkBiometricSupport(): Boolean {
+        val biometricManager = BiometricManager.from(requireContext())
+        val canAuthenticate = biometricManager.canAuthenticate()
+        return canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS
+    }
+
 }
