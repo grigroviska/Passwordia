@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import com.google.android.material.button.MaterialButton
@@ -22,7 +21,6 @@ class Generator : AppCompatActivity() {
     private lateinit var digits : SwitchCompat
     private lateinit var letters : SwitchCompat
     private lateinit var symbols : SwitchCompat
-    private lateinit var refresh : ImageView
     private lateinit var copy : MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +33,6 @@ class Generator : AppCompatActivity() {
         digits = binding.digits
         letters = binding.letters
         symbols = binding.symbols
-        refresh = binding.refreshButton
         copy = binding.copyText
 
         digits.isChecked = true
@@ -44,7 +41,7 @@ class Generator : AppCompatActivity() {
 
         newCode()
 
-        refresh.setOnClickListener {
+        binding.generatePasswordLayout.setEndIconOnClickListener {
 
             newCode()
 

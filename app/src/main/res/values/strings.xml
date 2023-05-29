@@ -24,4 +24,12 @@
     <string name="no_user_found_with_this_email_address">No user found with this email address.</string>
     <string name="failed_to_send_password_reset_email">Failed to send password reset email.</string>
     <string name="please_select_an_entry_option">Please select an entry option</string>
+    <string name="copy_password">COPY PASSWORD</string>
+    <string name="length">Length:</string>
+    <string name="_6">6</string>
+    <string name="_40">40</string>
+    <string name="digits_e_g_345">Digits (e.g. 345)</string>
+    <string name="letters_e_g_aa">Letters (e.g. Aa)</string>
+    <string name="symbols_amp"><![CDATA[Symbols (@$!#?&)]]></string>
+    <string name="strong_or_weak">Passwordia</string>
 </resources>
