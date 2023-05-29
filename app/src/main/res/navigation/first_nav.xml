@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/first_nav"
+    app:startDestination="@id/signInEmail">
+
+    <fragment
+        android:id="@+id/signInEmail"
+        android:name="com.grigroviska.passwordia.fragments.SignInEmail"
+        android:label="fragment_sign_in_email"
+        tools:layout="@layout/fragment_sign_in_email" >
+        <action
+            android:id="@+id/action_signInEmail_to_signUpEmail"
+            app:destination="@id/signUpEmail" />
+        <action
+            android:id="@+id/action_signInEmail_to_signInPassword"
+            app:destination="@id/signInPassword"/>
+        <action
+            android:id="@+id/action_signInEmail_to_selectEntry"
+            app:destination="@id/selectEntry" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/signInPassword"
+        android:name="com.grigroviska.passwordia.fragments.SignInPassword"
+        android:label="fragment_sign_in_password"
+        tools:layout="@layout/fragment_sign_in_password" >
+        <action
+            android:id="@+id/action_signInPassword_to_forgotPassword"
+            app:destination="@id/forgotPassword" />
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_signInPassword_to_signInEmail"
+            app:destination="@id/signInEmail" />
+        <action
+            android:id="@+id/action_signInPassword_to_selectEntry"
+            app:destination="@id/selectEntry" />
+    </fragment>
+    <fragment
+        android:id="@+id/forgotPassword"
+        android:name="com.grigroviska.passwordia.fragments.ForgotPassword"
+        android:label="fragment_forgot_password"
+        tools:layout="@layout/fragment_forgot_password" />
+    <fragment
+        android:id="@+id/signUpEmail"
+        android:name="com.grigroviska.passwordia.fragments.SignUpEmail"
+        android:label="fragment_sign_up_email"
+        tools:layout="@layout/fragment_sign_up_email" >
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_signUpEmail_to_signUpPassword"
+            app:destination="@id/signUpPassword" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectEntry"
+        android:name="com.grigroviska.passwordia.fragments.SelectEntry"
+        android:label="fragment_select_entry"
+        tools:layout="@layout/fragment_select_entry" >
+        <action
+            android:id="@+id/action_selectEntry_to_signInPassword"
+            app:destination="@id/signInPassword" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpPassword"
+        android:name="com.grigroviska.passwordia.fragments.SignUpPassword"
+        android:label="fragment_sign_up_password"
+        tools:layout="@layout/fragment_sign_up_password" >
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_signUpPassword_to_confirmationPassword"
+            app:destination="@id/confirmationPassword" />
+    </fragment>
+    <fragment
+        android:id="@+id/confirmationPassword"
+        android:name="com.grigroviska.passwordia.fragments.ConfirmationPassword"
+        android:label="fragment_confirmation_password"
+        tools:layout="@layout/fragment_confirmation_password" >
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <argument
+            android:name="pass"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_confirmationPassword_to_selectEntry"
+            app:destination="@id/selectEntry" />
+    </fragment>
+</navigation>

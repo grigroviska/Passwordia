@@ -10,10 +10,6 @@ class SignMain : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_main)
 
-        val fragment = SignInEmail.newInstance()
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.frameLayout, fragment)
-            .commit()
     }
 }

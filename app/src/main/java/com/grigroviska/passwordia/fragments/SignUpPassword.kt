@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.google.android.material.textfield.TextInputEditText
 import com.grigroviska.passwordia.R
 import com.grigroviska.passwordia.databinding.FragmentSignUpPasswordBinding
@@ -17,25 +19,32 @@ class SignUpPassword : Fragment() {
     private lateinit var binding: FragmentSignUpPasswordBinding
     private lateinit var signUpButton: Button
     private lateinit var password: TextInputEditText
+    private lateinit var navController : NavController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentSignUpPasswordBinding.inflate(inflater, container, false)
         val view = binding.root
 
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+        navController = Navigation.findNavController(view)
+
         password = binding.masterPassword
         signUpButton = binding.signUp
 
         signUpButton.setOnClickListener {
-            val email = arguments?.getString("email")
+            val email = arguments?.getString("email").toString()
             val password = password.text.toString()
 
-            if (getPasswordStrength(password) == "I like the password" || getPasswordStrength(password) == "I fell in love with the password") {
-                val confirmationPasswordFragment =
-                    ConfirmationPassword.newInstance(email.toString(), password)
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.frameLayout, confirmationPasswordFragment)
-                    .addToBackStack(null)
-                    .commit()
+            if (getPasswordStrength(password) == getString(R.string.i_like_the_password) || getPasswordStrength(password) == getString(R.string.i_fell_in_love_with_the_password)) {
+                val action = SignUpPasswordDirections.actionSignUpPasswordToConfirmationPassword(email, password)
+                navController.navigate(action)
             }
         }
 
@@ -50,8 +59,6 @@ class SignUpPassword : Fragment() {
                 getPasswordStrength(p0.toString())
             }
         })
-
-        return view
     }
 
     private fun getPasswordStrength(password: String) : String{
@@ -63,11 +70,13 @@ class SignUpPassword : Fragment() {
 
         val strength = when {
             length < 1 -> ""
-            length < 6 -> "I pretend not to see this password"
-            length < 8 -> "I open my eyes a little go ahead"
-            length < 10 && hasUpperCase && hasLowerCase && (hasDigit || hasSpecialChar) -> "I like the password"
-            length >= 10 && hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar -> "I fell in love with the password"
-            else ->  "I open my eyes a little go ahead"
+            length < 6 -> getString(R.string.i_pretend_not_to_see_this_password)
+            length < 8 -> getString(R.string.i_open_my_eyes_a_little_go_ahead)
+            length < 10 && hasUpperCase && hasLowerCase && (hasDigit || hasSpecialChar) -> getString(
+                            R.string.i_like_the_password)
+            length >= 10 && hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar -> getString(
+                            R.string.i_fell_in_love_with_the_password)
+            else ->  getString(R.string.i_open_my_eyes_a_little_go_ahead)
         }
 
         binding.passwordLayout.helperText = strength
@@ -75,13 +84,4 @@ class SignUpPassword : Fragment() {
         return strength
     }
 
-    companion object {
-        fun newInstance(email: String): SignUpPassword {
-            val fragment = SignUpPassword()
-            val bundle = Bundle()
-            bundle.putString("email", email)
-            fragment.arguments = bundle
-            return fragment
-        }
-    }
 }

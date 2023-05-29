@@ -34,6 +34,13 @@ class ForgotPassword : Fragment() {
         binding = FragmentForgotPasswordBinding.inflate(inflater, container, false)
         val view = binding.root
 
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         auth = FirebaseAuth.getInstance()
 
         email = binding.email
@@ -64,36 +71,26 @@ class ForgotPassword : Fragment() {
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             // Password reset email sent successfully
-                            Toast.makeText(requireContext(), "Password reset email sent.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), getString(R.string.password_reset_email_sent), Toast.LENGTH_SHORT).show()
                         } else {
                             val exception = task.exception
                             if (exception is FirebaseException) {
                                 val message = exception.message
-                                if (message == "There is no user record corresponding to this identifier. The user may have been deleted.") {
+                                if (message == getString(R.string.there_is_no_user_record)) {
                                     // User not found in the system
-                                    binding.emailLayout.error = "No user found with this email address."
+                                    binding.emailLayout.error = getString(R.string.no_user_found_with_this_email_address)
                                     return@addOnCompleteListener
                                 }
                             }
                             // Other error occurred
-                            Toast.makeText(requireContext(), "Failed to send password reset email.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), getString(R.string.failed_to_send_password_reset_email), Toast.LENGTH_SHORT).show()
                         }
                     }
             } else {
-                binding.emailLayout.helperText = "Please provide a valid email address."
+                binding.emailLayout.helperText = getString(R.string.valid_email_address)
             }
         }
 
-
-
-        return view
-    }
-
-
-    companion object {
-        fun newInstance(): ForgotPassword {
-            return ForgotPassword()
-        }
     }
 
 }

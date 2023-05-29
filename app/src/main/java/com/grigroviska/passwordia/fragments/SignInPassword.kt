@@ -14,6 +14,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -33,22 +35,20 @@ class SignInPassword : Fragment() {
     private lateinit var email: String
     private lateinit var password: TextInputEditText
     private lateinit var signInButton: Button
-
-    companion object {
-        private const val ARG_EMAIL = "email"
-
-        fun newInstance(email: String): SignInPassword {
-            val fragment = SignInPassword()
-            val args = Bundle()
-            args.putString(ARG_EMAIL, email)
-            fragment.arguments = args
-            return fragment
-        }
-    }
+    private lateinit var navController: NavController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentSignInPasswordBinding.inflate(inflater, container, false)
         val view = binding.root
+
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        navController = Navigation.findNavController(view)
 
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
@@ -56,9 +56,7 @@ class SignInPassword : Fragment() {
         password = binding.masterPassword
         signInButton = binding.signIn
 
-        arguments?.let {
-            email = it.getString(ARG_EMAIL, "")
-        }
+        email = arguments?.getString("email").toString()
 
         val spinner: Spinner = binding.accounts
 
@@ -81,16 +79,13 @@ class SignInPassword : Fragment() {
                 val selectedItem = items[position]
                 if (selectedItem == "Add another account") {
                     auth.signOut()
-                    val signInEmailFragment = SignInEmail()
-                    requireActivity().supportFragmentManager.beginTransaction()
-                        .replace(R.id.frameLayout, signInEmailFragment)
-                        .addToBackStack(null)
-                        .commit()
+                    navController.navigate(R.id.action_signInPassword_to_signInEmail)
+                    navController.popBackStack()
                 }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Hiçbir şey seçilmediğinde yapılacak işlemler
+
             }
         }
 
@@ -121,15 +116,10 @@ class SignInPassword : Fragment() {
 
         binding.goToForgotPassword.setOnClickListener {
 
-            val forgotPasswordFragment = ForgotPassword.newInstance()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.frameLayout, forgotPasswordFragment)
-                .addToBackStack(null)
-                .commit()
+            navController.navigate(R.id.action_signInPassword_to_forgotPassword)
 
         }
 
-        return view
     }
 
     private fun signInUser(email: String, password: String) {
@@ -137,48 +127,48 @@ class SignInPassword : Fragment() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        Toast.makeText(requireContext(), "Sign in successful", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.sign_in_successful), Toast.LENGTH_SHORT).show()
                         status()
                     } else {
                         try {
                             throw task.exception!!
                         } catch (e: FirebaseAuthInvalidUserException) {
-                            binding.passwordLayout.helperText = "Invalid user"
+                            binding.passwordLayout.helperText = getString(R.string.invalid_user)
                         } catch (e: FirebaseAuthInvalidCredentialsException) {
-                            binding.passwordLayout.helperText = "Wrong Master Password."
+                            binding.passwordLayout.helperText = getString(R.string.wrong_master_password)
                         } catch (e: Exception) {
-                            binding.passwordLayout.helperText = "Authentication failed"
+                            binding.passwordLayout.helperText = getString(R.string.authentication_failed)
                         }
                     }
                 }
         } else {
-            binding.passwordLayout.helperText ="Enter a password"
+            binding.passwordLayout.helperText =getString(R.string.enter_a_password)
         }
     }
 
     private fun status(){
         val sharedPreferences = requireContext().getSharedPreferences("Passwordia.EntryType", Context.MODE_PRIVATE)
         val entryType = sharedPreferences.getString("entry_type", "")
-        if(entryType==""){
+        when (entryType) {
+            "" -> {
 
-            val selectEntryFragment = SelectEntry()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.frameLayout, selectEntryFragment)
-                .addToBackStack(null)
-                .commit()
+                navController.navigate(R.id.action_signInPassword_to_selectEntry)
 
-        }else if(entryType == "biometric"){
+            }
+            "biometric" -> {
 
-            val intent = Intent(requireContext(), MainActivity::class.java)
-            startActivity(intent)
-            requireActivity().finish()
+                val intent = Intent(requireContext(), MainActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
 
-        }else{
+            }
+            else -> {
 
-            val intent = Intent(requireContext(), HomeActivity::class.java)
-            startActivity(intent)
-            requireActivity().finish()
+                val intent = Intent(requireContext(), HomeActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
 
+            }
         }
 
     }

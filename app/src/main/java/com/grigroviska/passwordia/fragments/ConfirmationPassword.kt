@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -23,6 +25,7 @@ class ConfirmationPassword : Fragment() {
     private lateinit var signUpButton: Button
     private lateinit var password: TextInputEditText
     private lateinit var confirmationPassword: TextInputEditText
+    private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +34,14 @@ class ConfirmationPassword : Fragment() {
         binding = FragmentConfirmationPasswordBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        navController = Navigation.findNavController(view)
+
         //Initialize
         auth = FirebaseAuth.getInstance()
 
@@ -38,7 +49,7 @@ class ConfirmationPassword : Fragment() {
         confirmationPassword = binding.masterPasswordConfirmation
         signUpButton = binding.signUp
 
-        val passwordFromPreviousFragment = arguments?.getString("password")
+        val passwordFromPreviousFragment = arguments?.getString("pass").toString()
         binding.masterPassword.setText(passwordFromPreviousFragment)
 
         val email = arguments?.getString("email")
@@ -53,12 +64,8 @@ class ConfirmationPassword : Fragment() {
                     auth.createUserWithEmailAndPassword(emailText, passwordText)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                Toast.makeText(requireContext(), "Your account has been successfully created", Toast.LENGTH_LONG).show()
-                                val selectEntryFragment = SelectEntry()
-                                requireActivity().supportFragmentManager.beginTransaction()
-                                    .replace(R.id.frameLayout, selectEntryFragment)
-                                    .addToBackStack(null)
-                                    .commit()
+                                Toast.makeText(requireContext(), getString(R.string.your_account_has_been_successfully_created), Toast.LENGTH_LONG).show()
+                                navController.navigate(R.id.action_confirmationPassword_to_selectEntry)
                             } else {
                                 try {
                                     throw task.exception!!
@@ -72,25 +79,12 @@ class ConfirmationPassword : Fragment() {
                             }
                         }
                 } else {
-                    binding.confirmationPasswordLayout.helperText = "Data do not confirm each other."
+                    binding.confirmationPasswordLayout.helperText = getString(R.string.data_do_not_confirm_each_other)
                 }
             } else {
-                binding.confirmationPasswordLayout.helperText = "Should not be empty"
+                binding.confirmationPasswordLayout.helperText = getString(R.string.should_not_be_empty)
             }
         }
 
-        return view
-    }
-
-
-    companion object {
-        fun newInstance(email: String, password: String): ConfirmationPassword {
-            val fragment = ConfirmationPassword()
-            val bundle = Bundle()
-            bundle.putString("email", email)
-            bundle.putString("password", password)
-            fragment.arguments = bundle
-            return fragment
-        }
     }
 }
