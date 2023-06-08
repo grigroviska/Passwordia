@@ -32,4 +32,11 @@
     <string name="letters_e_g_aa">Letters (e.g. Aa)</string>
     <string name="symbols_amp"><![CDATA[Symbols (@$!#?&)]]></string>
     <string name="strong_or_weak">Passwordia</string>
+    <string name="username">Username</string>
+    <string name="alternate_username">Alternate username</string>
+    <string name="password">Password</string>
+    <string name="website">Website</string>
+    <string name="notes">Notes</string>
+    <string name="category">Category</string>
+    <string name="item_name">Item Name</string>
 </resources>
