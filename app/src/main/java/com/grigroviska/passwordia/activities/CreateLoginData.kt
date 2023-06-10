@@ -24,6 +24,14 @@ class CreateLoginData : AppCompatActivity() {
                 saveLoginData()
             }
         }
+
+        binding.passwordGenerator.setOnClickListener {
+
+            val passwordGeneratorDialog = PasswordGeneratorDialog()
+            passwordGeneratorDialog.show(supportFragmentManager, "PasswordGeneratorDialog")
+
+        }
+
     }
 
     private fun saveLoginData() {
@@ -50,9 +58,8 @@ class CreateLoginData : AppCompatActivity() {
                 )
 
                 loginViewModel.insert(loginData)
-
                 Toast.makeText(this, "Veri başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
-                println(loginData)
+                finish()
 
             } else {
                 Toast.makeText(this, "Lütfen gerekli alanları doldurun", Toast.LENGTH_SHORT).show()

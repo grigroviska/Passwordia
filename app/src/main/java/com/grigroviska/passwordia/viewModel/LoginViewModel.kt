@@ -24,4 +24,11 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     fun insert(loginData: LoginData) = viewModelScope.launch(Dispatchers.IO) {
         repo.insert(loginData)
     }
+
+    fun deleteLoginData(loginData: LoginData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.delete(loginData)
+        }
+    }
+
 }

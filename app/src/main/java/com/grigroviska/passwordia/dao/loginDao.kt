@@ -2,6 +2,7 @@ package com.grigroviska.passwordia.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -15,5 +16,8 @@ interface loginDao {
 
     @Query("SELECT * FROM loginData_table ORDER BY id DESC")
     fun getAllData(): LiveData<List<LoginData>>
+
+    @Delete
+    suspend fun delete(loginData: LoginData)
 
 }
