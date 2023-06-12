@@ -7,8 +7,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.grigroviska.passwordia.databinding.ActivityCreateLoginDataBinding
 import com.grigroviska.passwordia.model.LoginData
 import com.grigroviska.passwordia.viewModel.LoginViewModel
+import java.util.regex.Pattern
 
-class CreateLoginData : AppCompatActivity() {
+class CreateLoginData : AppCompatActivity(), PasswordGeneratorDialogListener {
     private lateinit var binding: ActivityCreateLoginDataBinding
     private lateinit var loginViewModel: LoginViewModel
 
@@ -17,60 +18,48 @@ class CreateLoginData : AppCompatActivity() {
         binding = ActivityCreateLoginDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+        loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
 
         binding.createLoginData.setOnClickListener {
-            if (::loginViewModel.isInitialized) {
-                saveLoginData()
-            }
+            saveLoginData()
         }
 
         binding.passwordGenerator.setOnClickListener {
-
-            val passwordGeneratorDialog = PasswordGeneratorDialog()
-            passwordGeneratorDialog.show(supportFragmentManager, "PasswordGeneratorDialog")
-
+            showPasswordGeneratorDialog()
         }
-
     }
 
+    override fun onPasswordGenerated(password: String) {
+        binding.pass.setText(password)
+    }
+
+
     private fun saveLoginData() {
-        try {
+        val userName = binding.username.text.toString().trim()
+        val alternateUserName = binding.alternateUsername.text.toString().trim()
+        val password = binding.pass.text.toString().trim()
+        val website = binding.website.text.toString().trim()
+        val notes = binding.notes.text.toString().trim()
+        val itemName = binding.itemName.text.toString().trim()
+        val category = binding.category.text.toString().trim()
 
-            val userName = binding.username.text.toString().trim()
-            val alternateUserName = binding.alternateUsername.text.toString().trim()
-            val password = binding.pass.text.toString().trim()
-            val website = binding.website.text.toString().trim()
-            val notes = binding.notes.text.toString().trim()
-            val itemName = binding.itemName.text.toString().trim()
-            val category = binding.category.text.toString().trim()
+        if (validateFields(userName, password, website, itemName, category) && isValidUrl(website)) {
+            val loginData = LoginData(
+                0,
+                userName,
+                alternateUserName,
+                password,
+                website,
+                notes,
+                itemName,
+                category
+            )
 
-            if (validateFields(userName, password, website, itemName, category)) {
-                val loginData = LoginData(
-                    0, // Geçici olarak 0 değerini kullanarak otomatik olarak artan bir ID atayabilirsiniz
-                    userName,
-                    alternateUserName,
-                    password,
-                    website,
-                    notes,
-                    itemName,
-                    category
-                )
-
-                loginViewModel.insert(loginData)
-                Toast.makeText(this, "Veri başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
-                finish()
-
-            } else {
-                Toast.makeText(this, "Lütfen gerekli alanları doldurun", Toast.LENGTH_SHORT).show()
-            }
-
-        }catch (e: Exception){
-
-            Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
-
+            loginViewModel.insert(loginData)
+            finish()
+        } else {
+            Toast.makeText(this, "Please fill in the required fields!", Toast.LENGTH_SHORT).show()
         }
-
     }
 
     private fun validateFields(
@@ -82,4 +71,25 @@ class CreateLoginData : AppCompatActivity() {
     ): Boolean {
         return userName.isNotEmpty() && password.isNotEmpty() && website.isNotEmpty() && itemName.isNotEmpty() && category.isNotEmpty()
     }
+
+    private fun showPasswordGeneratorDialog() {
+        val dialog = PasswordGeneratorDialog()
+        dialog.show(supportFragmentManager, "password_generator_dialog")
+    }
+
+    private fun isValidUrl(url: String): Boolean {
+        val pattern = Pattern.compile(
+            "^((http[s]?|ftp):\\/\\/)?"+ // Protocol
+                    "([0-9a-zA-Z]+([.-][0-9a-zA-Z]+)*\\.[a-zA-Z]{2,6}|"+ // Domain names
+                    "([0-9]{1,3}\\.){3}[0-9]{1,3})"+ // IP addresses
+                    "(\\/[a-zA-Z0-9\\/\\.-]*)?"+ // Path and Query
+                    "(\\?[a-zA-Z0-9\\-._?,'\\\\/+&amp;%$#=]*)?" // Query parameters
+        )
+        val isValid = pattern.matcher(url).matches()
+        if (!isValid) {
+            Toast.makeText(this, "Enter a valid URL!", Toast.LENGTH_SHORT).show()
+        }
+        return isValid
+    }
+
 }

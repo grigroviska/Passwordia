@@ -71,22 +71,22 @@ class Generator : AppCompatActivity() {
         digits.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked && !letters.isChecked && !symbols.isChecked) {
                 digits.isChecked = true
-                newCode()
             }
+            newCode()
         }
 
         letters.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked && !digits.isChecked && !symbols.isChecked) {
                 letters.isChecked = true
-                newCode()
             }
+            newCode()
         }
 
         symbols.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked && !digits.isChecked && !letters.isChecked) {
                 symbols.isChecked = true
-                newCode()
             }
+            newCode()
         }
 
 

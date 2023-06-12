@@ -8,6 +8,7 @@
     tools:context=".activities.CreateLoginData"
     android:background="@color/background">
 
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@id/usernameLayout"
         android:layout_width="320dp"
@@ -58,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:endIconDrawable="@drawable/eye_icon"
-            app:endIconMode="custom">
+            app:endIconMode="password_toggle">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/pass"

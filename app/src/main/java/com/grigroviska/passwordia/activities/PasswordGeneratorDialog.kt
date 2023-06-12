@@ -2,60 +2,101 @@ package com.grigroviska.passwordia.activities
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.DialogFragment
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.grigroviska.passwordia.R
-import com.grigroviska.passwordia.databinding.PasswordGeneratorDialogBinding
 
 class PasswordGeneratorDialog : DialogFragment() {
+
+    private lateinit var passwordGeneratorListener: PasswordGeneratorDialogListener
 
     private lateinit var output : TextInputEditText
     private lateinit var length : Slider
     private lateinit var digits : SwitchCompat
     private lateinit var letters : SwitchCompat
     private lateinit var symbols : SwitchCompat
+    private lateinit var controlBar : View
     private lateinit var strengthOrWeak : TextView
-    private lateinit var controlBar : Slider
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val inflater = requireActivity().layoutInflater
-        val dialogView = inflater.inflate(R.layout.password_generator_dialog, null)
-        val builder = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setPositiveButton("Use") { dialog, _ ->
-
-                dialog.dismiss()
+        val mDialog = LayoutInflater.from(context).inflate(R.layout.password_generator_dialog, null)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(mDialog)
+            .setPositiveButton("Use") { _, _ ->
+                passwordGeneratorListener.onPasswordGenerated(output.text.toString())
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.cancel()
+            .setNegativeButton("Cancel") { _, _ ->
             }
+            .create()
 
-        output = dialogView.findViewById(R.id.passText)
-        length = dialogView.findViewById(R.id.lengthBar)
-        digits = dialogView.findViewById(R.id.digits)
-        letters = dialogView.findViewById(R.id.letters)
-        symbols = dialogView.findViewById(R.id.symbols)
-        strengthOrWeak = dialogView.findViewById(R.id.strengthOrWeak)
-        controlBar = dialogView.findViewById(R.id.controlBar)
+        output = mDialog.findViewById(R.id.passText)
+        length = mDialog.findViewById(R.id.lengthBar)
+        digits = mDialog.findViewById(R.id.digits)
+        letters = mDialog.findViewById(R.id.letters)
+        symbols = mDialog.findViewById(R.id.symbols)
+        controlBar = mDialog.findViewById(R.id.controlBar)
+        strengthOrWeak = mDialog.findViewById(R.id.strengthOrWeak)
 
-        val passTextLayout = dialogView.findViewById<TextInputLayout>(R.id.passTextLayout)
+        digits.isChecked = true
+        letters.isChecked = true
+        symbols.isChecked = true
 
-        passTextLayout.setEndIconOnClickListener {
+        newCode()
+
+        val pTextLayout = mDialog.findViewById<TextInputLayout>(R.id.passTextLayout)
+
+        pTextLayout.setEndIconOnClickListener {
 
             newCode()
 
         }
 
+        length.addOnChangeListener { slider, value, fromUser ->
 
-        return builder.create()
+            newCode()
+
+        }
+
+        digits.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked && !letters.isChecked && !symbols.isChecked) {
+                digits.isChecked = true
+            }
+            newCode()
+        }
+
+        letters.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked && !digits.isChecked && !symbols.isChecked) {
+                letters.isChecked = true
+            }
+            newCode()
+        }
+
+        symbols.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked && !digits.isChecked && !letters.isChecked) {
+                symbols.isChecked = true
+            }
+            newCode()
+        }
+
+        return dialog
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            passwordGeneratorListener = context as PasswordGeneratorDialogListener
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$context must implement PasswordGeneratorDialogListener")
+        }
     }
 
     private fun generateCode(length: Int, useLetters: Boolean, useNumbers: Boolean, useSpecialCharacters: Boolean): String {
@@ -110,7 +151,7 @@ class PasswordGeneratorDialog : DialogFragment() {
         val strength = getPasswordStrength(newCode)
         strengthOrWeak.text = strength
 
-        val controlBar = controlBar
+
 
         when (strength) {
             "Weak" -> controlBar.setBackgroundColor(Color.RED)
@@ -120,5 +161,4 @@ class PasswordGeneratorDialog : DialogFragment() {
         }
 
     }
-
 }
