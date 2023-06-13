@@ -2,6 +2,7 @@ package com.grigroviska.passwordia.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.grigroviska.passwordia.databinding.ActivityCreateLoginDataBinding
@@ -17,8 +18,74 @@ class CreateLoginData : AppCompatActivity(), PasswordGeneratorDialogListener {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateLoginDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        this.window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
 
         loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+
+        val loginId : Int = intent.getIntExtra("loginId", 999999)
+
+        if (loginId != 999999) {
+
+            try {
+
+                loginViewModel.allLogin.observe(this@CreateLoginData) { loginDataList ->
+
+                    val selectedLoginData: LoginData? = loginDataList.find { it.id == loginId }
+
+                    if (selectedLoginData != null) {
+
+                        binding.username.setText(selectedLoginData.userName)
+                        binding.alternateUsername.setText(selectedLoginData.alternateUserName)
+                        binding.pass.setText(selectedLoginData.password)
+                        binding.website.setText(selectedLoginData.website)
+                        binding.notes.setText(selectedLoginData.notes)
+                        binding.itemName.setText(selectedLoginData.itemName)
+                        binding.category.setText(selectedLoginData.category)
+
+                    } else {
+                        Toast.makeText(baseContext, "An error has occurred!", Toast.LENGTH_SHORT).show()
+                    }
+
+                    binding.createLoginData.setOnClickListener {
+
+                        val updatedUserName = binding.username.text.toString().trim()
+                        val updatedAlternateUserName = binding.alternateUsername.text.toString().trim()
+                        val updatedPassword = binding.pass.text.toString().trim()
+                        val updatedWebsite = binding.website.text.toString().trim()
+                        val updatedNotes = binding.notes.text.toString().trim()
+                        val updatedItemName = binding.itemName.text.toString().trim()
+                        val updatedCategory = binding.category.text.toString().trim()
+
+                        if (validateFields(updatedUserName, updatedPassword, updatedWebsite, updatedItemName, updatedCategory) && isValidUrl(updatedWebsite)) {
+
+                            val updatedLoginData = LoginData(
+                                loginId,
+                                updatedUserName,
+                                updatedAlternateUserName,
+                                updatedPassword,
+                                updatedWebsite,
+                                updatedNotes,
+                                updatedItemName,
+                                updatedCategory
+                            )
+
+                            loginViewModel.update(updatedLoginData)
+                            finish()
+                        } else {
+                            Toast.makeText(this, "Please fill in the required fields!", Toast.LENGTH_SHORT).show()
+                        }
+
+                    }
+                }
+
+            }catch (e: Exception){
+
+                Toast.makeText(baseContext, e.localizedMessage, Toast.LENGTH_SHORT).show()
+
+            }
+
+
+        }
 
         binding.createLoginData.setOnClickListener {
             saveLoginData()

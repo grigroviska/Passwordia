@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="firstColor">#344055</color>
     <color name="secondColor">#404E5C</color>
+    <color name="thirdColor">#4F5F6E</color>
     <color name="background">#080F0F</color>
     <color name="fourthColor">#1E2D2F</color>
     <color name="selectedColor">#8AA8C5</color>

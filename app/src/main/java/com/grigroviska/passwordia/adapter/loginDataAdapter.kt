@@ -14,16 +14,19 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.grigroviska.passwordia.R
+import com.grigroviska.passwordia.activities.CreateLoginData
 import com.grigroviska.passwordia.model.LoginData
 import com.grigroviska.passwordia.viewModel.LoginViewModel
 import java.net.MalformedURLException
 import java.net.URL
+import kotlin.coroutines.coroutineContext
 
 class loginDataAdapter(private var loginDataList: List<LoginData>,
                        override val viewModelStore: ViewModelStore
@@ -63,6 +66,17 @@ class loginDataAdapter(private var loginDataList: List<LoginData>,
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val optionsImageView: ImageView = itemView.findViewById(R.id.options)
         lateinit var loginData: LoginData
+
+        init {
+            itemView.setOnClickListener {
+
+                val context = itemView.context
+                val intent = Intent(context, CreateLoginData::class.java)
+                intent.putExtra("loginId", loginData.id)
+                context.startActivity(intent)
+
+            }
+        }
     }
 
     private fun getDomainFromUrl(url: String): String {
@@ -93,6 +107,10 @@ class loginDataAdapter(private var loginDataList: List<LoginData>,
         } catch (e: ActivityNotFoundException) {
             Toast.makeText(context, "Could not open website", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun setData(dataList: List<LoginData>) {
+        this.loginDataList = dataList
     }
 
 

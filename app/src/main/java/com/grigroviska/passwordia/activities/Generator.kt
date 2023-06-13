@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import com.google.android.material.button.MaterialButton
@@ -27,6 +28,8 @@ class Generator : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityGeneratorBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        this.window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
 
         output = binding.outputPassword
         length = binding.lengthBar

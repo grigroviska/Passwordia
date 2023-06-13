@@ -31,4 +31,10 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun update(loginData: LoginData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.update(loginData)
+        }
+    }
+
 }

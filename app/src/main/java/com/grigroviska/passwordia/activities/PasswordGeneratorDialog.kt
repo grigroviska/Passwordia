@@ -28,6 +28,7 @@ class PasswordGeneratorDialog : DialogFragment() {
     private lateinit var strengthOrWeak : TextView
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
         val mDialog = LayoutInflater.from(context).inflate(R.layout.password_generator_dialog, null)
         val dialog = AlertDialog.Builder(requireContext())
             .setView(mDialog)

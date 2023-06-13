@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.grigroviska.passwordia.model.LoginData
 
 @Dao
@@ -19,5 +20,8 @@ interface loginDao {
 
     @Delete
     suspend fun delete(loginData: LoginData)
+
+    @Update
+    suspend fun update(loginData: LoginData)
 
 }

@@ -17,5 +17,8 @@ class loginRepo(private val loginDao : loginDao){
         loginDao.delete(loginData)
     }
 
+    suspend fun update(loginData: LoginData) {
+        loginDao.update(loginData)
+    }
 
 }
