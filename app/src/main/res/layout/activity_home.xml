@@ -78,6 +78,15 @@
         app:pressedTranslationZ="12dp"
         />
 
+    <ImageView
+        android:id="@+id/homeImage"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:src="@drawable/moonlight"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -87,20 +96,37 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
+        android:clickable="true"
+        android:focusable="true"
         android:backgroundTint="@color/firstColor"
+        android:tint="@color/white"
         android:src="@drawable/add_icon"
-        app:elevation="6dp"
         app:maxImageSize="24dp"
-        app:pressedTranslationZ="12dp"
         />
 
-    <ImageView
-        android:id="@+id/homeImage"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/createAuthenticator"
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:src="@drawable/moonlight"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/fab"
+        app:layout_constraintEnd_toEndOf="@id/fab"
+        android:src="@drawable/authenticator_icon" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/createLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/createAuthenticator"
+        app:layout_constraintEnd_toEndOf="@id/createAuthenticator"
+        android:src="@drawable/account_icon"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

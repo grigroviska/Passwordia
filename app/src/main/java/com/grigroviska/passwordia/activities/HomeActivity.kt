@@ -5,12 +5,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.grigroviska.passwordia.R
 import com.grigroviska.passwordia.adapter.loginDataAdapter
 import com.grigroviska.passwordia.databinding.ActivityHomeBinding
 import com.grigroviska.passwordia.model.LoginData
@@ -25,6 +28,13 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
     private lateinit var viewModel: LoginViewModel
 
     private lateinit var searchView: SearchView
+
+    private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim) }
+    private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim) }
+    private val fromBottom: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.from_bottom_anim) }
+    private val toBottom: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.to_bottom_anim) }
+
+    private var clicked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,19 +75,34 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
         binding.fab.setOnClickListener {
 
+            /*val intent = Intent(this, CreateLoginData::class.java)
+            startActivity(intent)*/
+            onAddButtonClicked()
+
+        }
+
+        binding.createLogin.setOnClickListener{
+
             val intent = Intent(this, CreateLoginData::class.java)
             startActivity(intent)
+
+        }
+
+        binding.createAuthenticator.setOnClickListener {
+
+            val intent = Intent(this, CreateAuthenticator::class.java)
+            startActivity(intent)
+
         }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                // Metni gönderilen metinle arayın
                 search(query)
                 return false
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                // Metin her değiştiğinde arama yapın
+
                 search(newText)
                 return false
             }
@@ -86,18 +111,55 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
     private fun search(query: String) {
         val filteredList = loginDataList.filter { loginData ->
-            // Öğeyle ilgili metni filtreleyin (örneğin, başlık, kullanıcı adı, vb.)
                     loginData.itemName.contains(query, ignoreCase = true) ||
                     loginData.userName.contains(query, ignoreCase = true) ||
                     loginData.website.contains(query, ignoreCase = true)
         }
 
-        // Filtrelenmiş listeyi adaptöre ayarlayın
         adapter.setData(filteredList)
 
-        // Verilerin güncellendiğini bildirin
         adapter.notifyDataSetChanged()
     }
 
+    private fun onAddButtonClicked(){
+
+        setVisibility(clicked)
+        setAnimation(clicked)
+
+        clicked = !clicked
+
+    }
+
+    private fun setAnimation(clicked : Boolean) {
+
+        if (!clicked) {
+            binding.createLogin.visibility = View.VISIBLE
+            binding.createAuthenticator.visibility = View.VISIBLE
+            binding.createLogin.startAnimation(fromBottom)
+            binding.createAuthenticator.startAnimation(fromBottom)
+            binding.fab.startAnimation(rotateOpen)
+        } else {
+            binding.createLogin.visibility = View.INVISIBLE
+            binding.createAuthenticator.visibility = View.INVISIBLE
+            binding.createLogin.startAnimation(toBottom)
+            binding.createAuthenticator.startAnimation(toBottom)
+            binding.fab.startAnimation(rotateClose)
+        }
+
+    }
+
+    private fun setVisibility(clicked : Boolean) {
+        if (!clicked){
+
+            binding.createLogin.visibility = View.VISIBLE
+            binding.createAuthenticator.visibility = View.VISIBLE
+
+        }else{
+
+            binding.createLogin.visibility = View.INVISIBLE
+            binding.createAuthenticator.visibility = View.INVISIBLE
+
+        }
+    }
 
 }

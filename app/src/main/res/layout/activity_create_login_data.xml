@@ -36,6 +36,7 @@
                 android:id="@+id/username"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:hint="@string/username" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -53,6 +54,7 @@
                 android:id="@+id/alternateUsername"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:hint="@string/alternate_username" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -79,6 +81,7 @@
                     android:id="@+id/pass"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
                     android:inputType="textPassword"
                     android:hint="@string/password" />
 
@@ -106,6 +109,7 @@
                 android:id="@+id/website"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:hint="@string/website" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -123,6 +127,7 @@
                 android:id="@+id/notes"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:hint="@string/notes" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -140,6 +145,7 @@
                 android:id="@+id/itemName"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:hint="@string/item_name" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -157,6 +163,7 @@
                 android:id="@+id/category"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:hint="@string/category" />
 
         </com.google.android.material.textfield.TextInputLayout>
