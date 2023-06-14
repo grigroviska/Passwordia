@@ -14,9 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -26,12 +24,10 @@ import com.grigroviska.passwordia.model.LoginData
 import com.grigroviska.passwordia.viewModel.LoginViewModel
 import java.net.MalformedURLException
 import java.net.URL
-import kotlin.coroutines.coroutineContext
 
-class loginDataAdapter(private var loginDataList: List<LoginData>,
-                       override val viewModelStore: ViewModelStore
-) :
-    RecyclerView.Adapter<loginDataAdapter.ViewHolder>(), ViewModelStoreOwner {
+class loginDataAdapter(
+    private var loginDataList: List<LoginData>
+) : RecyclerView.Adapter<loginDataAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -40,23 +36,8 @@ class loginDataAdapter(private var loginDataList: List<LoginData>,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         val loginData = loginDataList[position]
-        holder.loginData = loginData
-
-        holder.itemView.findViewById<TextView>(R.id.websiteFromRoom).text = truncateString(getDomainFromUrl(loginData.website))
-        holder.itemView.findViewById<TextView>(R.id.usernameFromRoom).text = truncateString(loginData.userName)
-
-        holder.optionsImageView.setOnClickListener {
-            showBottomSheetDialog(holder, holder.itemView.context)
-        }
-
-        holder.itemView.findViewById<ImageView>(R.id.copyPassword).setOnClickListener {
-            val clipboard = holder.itemView.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("password", loginData.password)
-            clipboard.setPrimaryClip(clip)
-            Toast.makeText(holder.itemView.context, "Copy Password!", Toast.LENGTH_SHORT).show()
-        }
+        holder.bind(loginData)
     }
 
     override fun getItemCount(): Int {
@@ -64,17 +45,32 @@ class loginDataAdapter(private var loginDataList: List<LoginData>,
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val optionsImageView: ImageView = itemView.findViewById(R.id.options)
-        lateinit var loginData: LoginData
+        private val optionsImageView: ImageView = itemView.findViewById(R.id.options)
+        private val websiteTextView: TextView = itemView.findViewById(R.id.websiteFromRoom)
+        private val usernameTextView: TextView = itemView.findViewById(R.id.usernameFromRoom)
 
-        init {
+        fun bind(loginData: LoginData) {
+            websiteTextView.text = loginData.website?.let { getDomainFromUrl(it) }
+                ?.let { truncateString(it) }
+            usernameTextView.text = loginData.userName?.let { truncateString(it) }
+
+            optionsImageView.setOnClickListener {
+                showBottomSheetDialog(loginData, itemView.context)
+            }
+
             itemView.setOnClickListener {
-
                 val context = itemView.context
                 val intent = Intent(context, CreateLoginData::class.java)
                 intent.putExtra("loginId", loginData.id)
                 context.startActivity(intent)
+            }
 
+            itemView.findViewById<ImageView>(R.id.copyPassword).setOnClickListener {
+                val clipboard =
+                    itemView.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("password", loginData.password)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(itemView.context, "Copy Password!", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -90,7 +86,6 @@ class loginDataAdapter(private var loginDataList: List<LoginData>,
             url
         }
     }
-
 
     private fun truncateString(text: String): String {
         return if (text.length > 20) {
@@ -109,12 +104,7 @@ class loginDataAdapter(private var loginDataList: List<LoginData>,
         }
     }
 
-    fun setData(dataList: List<LoginData>) {
-        this.loginDataList = dataList
-    }
-
-
-    private fun showBottomSheetDialog(holder: ViewHolder, context: Context) {
+    private fun showBottomSheetDialog(loginData: LoginData, context: Context) {
         val bottomSheetDialog = BottomSheetDialog(context)
         val view = LayoutInflater.from(context).inflate(R.layout.options_bottom_sheet, null)
         bottomSheetDialog.setContentView(view)
@@ -126,50 +116,66 @@ class loginDataAdapter(private var loginDataList: List<LoginData>,
         val openWebsite = view.findViewById<LinearLayout>(R.id.openWebsiteLayout)
         val delete = view.findViewById<LinearLayout>(R.id.deleteLayout)
 
-        websiteName.text = holder.loginData.website
+        websiteName.text = loginData.website
 
         copyEmail.setOnClickListener {
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("email", holder.loginData.userName)
+            val clipboard =
+                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("email", loginData.userName)
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(context, context.getString(R.string.email_copied), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.email_copied), Toast.LENGTH_SHORT)
+                .show()
             bottomSheetDialog.dismiss()
         }
 
         copyUsername.setOnClickListener {
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("username", holder.loginData.userName)
+            val clipboard =
+                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("username", loginData.userName)
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(context, context.getString(R.string.username_copied), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.username_copied),
+                Toast.LENGTH_SHORT
+            ).show()
             bottomSheetDialog.dismiss()
         }
 
         copyPassword.setOnClickListener {
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("password", holder.loginData.password)
+            val clipboard =
+                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("password", loginData.password)
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(context, context.getString(R.string.copy_password_message), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.copy_password_message),
+                Toast.LENGTH_SHORT
+            ).show()
             bottomSheetDialog.dismiss()
         }
 
         openWebsite.setOnClickListener {
-
-            val url = holder.loginData.website
-            openWebsite(url, holder.itemView.context)
+            val url = loginData.website
+            if (url != null) {
+                openWebsite(url, context)
+            }
             bottomSheetDialog.dismiss()
         }
 
         delete.setOnClickListener {
-
-            val viewModel: LoginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+            val viewModel =
+                ViewModelProvider(context as ViewModelStoreOwner).get(LoginViewModel::class.java)
 
             val alertDialog = AlertDialog.Builder(context)
                 .setTitle(context.getString(R.string.delete))
                 .setMessage(context.getString(R.string.are_you_sure_you_want_to_delete_this_login_data))
                 .setPositiveButton(context.getString(R.string.yes)) { dialog, _ ->
-                    val loginData = holder.loginData
                     viewModel.deleteLoginData(loginData)
-                    Toast.makeText(context, context.getString(R.string.login_data_deleted), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.login_data_deleted),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     bottomSheetDialog.dismiss()
                 }
                 .setNegativeButton(context.getString(R.string.no)) { dialog, _ ->
@@ -179,9 +185,12 @@ class loginDataAdapter(private var loginDataList: List<LoginData>,
             alertDialog.show()
         }
 
-
         bottomSheetDialog.show()
     }
 
+    fun setData(loginDataList: List<LoginData>) {
+        this.loginDataList = loginDataList
+        notifyDataSetChanged()
+    }
 
 }

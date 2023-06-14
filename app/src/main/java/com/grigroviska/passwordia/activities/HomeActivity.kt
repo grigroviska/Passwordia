@@ -23,12 +23,12 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var auth: FirebaseAuth
-    private lateinit var adapter: loginDataAdapter
+    private var adapter: loginDataAdapter? = null
     private var loginDataList: List<LoginData> = emptyList()
     private lateinit var viewModel: LoginViewModel
+    private lateinit var searchView : SearchView
 
-    private lateinit var searchView: SearchView
-
+    //Animation
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim) }
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim) }
     private val fromBottom: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.from_bottom_anim) }
@@ -40,20 +40,25 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        this.window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        this.window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
 
         auth = FirebaseAuth.getInstance()
         searchView = binding.searchBox
 
-        try{
-            adapter = loginDataAdapter(emptyList(), viewModelStore)
-            viewModel = ViewModelProvider(this@HomeActivity)[LoginViewModel::class.java]
-            viewModel.allLogin.observe(this@HomeActivity) { loginData ->
+        try {
+            viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+            viewModel.allLogin.observe(this) { loginData ->
                 loginDataList = loginData
-                adapter = loginDataAdapter(loginDataList, viewModelStore)
-                binding.dataList.adapter = adapter
-                binding.dataList.layoutManager = LinearLayoutManager(this)
-                adapter.notifyDataSetChanged()
+                if (adapter == null) {
+                    adapter = loginDataAdapter(loginDataList)
+                    binding.dataList.adapter = adapter
+                    binding.dataList.layoutManager = LinearLayoutManager(this)
+                } else {
+                    adapter?.setData(loginDataList)
+                }
 
                 if (loginData.isEmpty()) {
                     binding.dataList.visibility = View.GONE
@@ -65,18 +70,12 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
                     binding.noData.visibility = View.GONE
                 }
             }
-
-        }catch (e: Exception){
-
+        } catch (e: Exception) {
             Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
-
         }
-
 
         binding.fab.setOnClickListener {
 
-            /*val intent = Intent(this, CreateLoginData::class.java)
-            startActivity(intent)*/
             onAddButtonClicked()
 
         }
@@ -111,55 +110,58 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
     private fun search(query: String) {
         val filteredList = loginDataList.filter { loginData ->
-                    loginData.itemName.contains(query, ignoreCase = true) ||
-                    loginData.userName.contains(query, ignoreCase = true) ||
-                    loginData.website.contains(query, ignoreCase = true)
+            val isItemNameMatch = loginData.itemName?.contains(query, ignoreCase = true) ?: false
+            val isUserNameMatch = loginData.userName?.contains(query, ignoreCase = true) ?: false
+            val isWebsiteMatch = loginData.website?.contains(query, ignoreCase = true) ?: false
+
+            isItemNameMatch || isUserNameMatch || isWebsiteMatch
         }
 
-        adapter.setData(filteredList)
-
-        adapter.notifyDataSetChanged()
+        adapter?.let {
+            it.setData(filteredList)
+            it.notifyDataSetChanged()
+        }
     }
+
 
     private fun onAddButtonClicked(){
 
-        setVisibility(clicked)
-        setAnimation(clicked)
+            setVisibility(clicked)
+            setAnimation(clicked)
 
-        clicked = !clicked
-
-    }
-
-    private fun setAnimation(clicked : Boolean) {
-
-        if (!clicked) {
-            binding.createLogin.visibility = View.VISIBLE
-            binding.createAuthenticator.visibility = View.VISIBLE
-            binding.createLogin.startAnimation(fromBottom)
-            binding.createAuthenticator.startAnimation(fromBottom)
-            binding.fab.startAnimation(rotateOpen)
-        } else {
-            binding.createLogin.visibility = View.INVISIBLE
-            binding.createAuthenticator.visibility = View.INVISIBLE
-            binding.createLogin.startAnimation(toBottom)
-            binding.createAuthenticator.startAnimation(toBottom)
-            binding.fab.startAnimation(rotateClose)
-        }
-
-    }
-
-    private fun setVisibility(clicked : Boolean) {
-        if (!clicked){
-
-            binding.createLogin.visibility = View.VISIBLE
-            binding.createAuthenticator.visibility = View.VISIBLE
-
-        }else{
-
-            binding.createLogin.visibility = View.INVISIBLE
-            binding.createAuthenticator.visibility = View.INVISIBLE
+            clicked = !clicked
 
         }
-    }
 
+        private fun setAnimation(clicked : Boolean) {
+
+            if (!clicked) {
+                binding.createLogin.visibility = View.VISIBLE
+                binding.createAuthenticator.visibility = View.VISIBLE
+                binding.createLogin.startAnimation(fromBottom)
+                binding.createAuthenticator.startAnimation(fromBottom)
+                binding.fab.startAnimation(rotateOpen)
+            } else {
+                binding.createLogin.visibility = View.INVISIBLE
+                binding.createAuthenticator.visibility = View.INVISIBLE
+                binding.createLogin.startAnimation(toBottom)
+                binding.createAuthenticator.startAnimation(toBottom)
+                binding.fab.startAnimation(rotateClose)
+            }
+
+        }
+
+        private fun setVisibility(clicked : Boolean) {
+            if (!clicked){
+
+                binding.createLogin.visibility = View.VISIBLE
+                binding.createAuthenticator.visibility = View.VISIBLE
+
+            }else{
+
+                binding.createLogin.visibility = View.INVISIBLE
+                binding.createAuthenticator.visibility = View.INVISIBLE
+
+            }
+        }
 }

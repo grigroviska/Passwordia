@@ -7,11 +7,13 @@ import androidx.room.PrimaryKey
 data class LoginData(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val userName: String,
-    val alternateUserName: String,
-    val password: String,
-    val website: String,
-    val notes: String,
-    val itemName: String,
-    val category: String
+    val userName: String? = null,
+    val alternateUserName: String? = null,
+    val password: String? = null,
+    val website: String? = null,
+    val notes: String? = null,
+    val itemName: String? = null,
+    val category: String? = null,
+    val accountName: String? = null,
+    val totpKey: String? = null,
 )
