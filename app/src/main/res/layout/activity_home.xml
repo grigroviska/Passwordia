@@ -17,22 +17,16 @@
         app:layout_constraintTop_toTopOf="parent"
         android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="20dp"
-            android:padding="1dp"
-            android:src="@drawable/fingerprint" />
-
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchBox"
-            android:layout_width="300dp"
+            android:layout_width="350dp"
             android:layout_height="50dp"
             app:defaultQueryHint="Search..."
-            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
             app:iconifiedByDefault="false"
             app:searchIcon="@drawable/search_icon"
             android:textColorHint="@color/white"
+            app:goIcon="@drawable/settings_icon"
             />
 
     </RelativeLayout>
