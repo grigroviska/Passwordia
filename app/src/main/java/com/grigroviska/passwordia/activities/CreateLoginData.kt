@@ -23,62 +23,60 @@ class CreateLoginData : AppCompatActivity(), PasswordGeneratorDialogListener {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateLoginDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        this.window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
 
         loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
 
         val loginId: Int = intent.getIntExtra("loginId", 999999)
 
         if (loginId != 999999) {
-            try {
-                loginViewModel.allLogin.observe(this@CreateLoginData) { loginDataList ->
-                    selectedLoginData = loginDataList.find { it.id == loginId }
+            loginViewModel.allLogin.observe(this@CreateLoginData) { loginDataList ->
+                selectedLoginData = loginDataList.find { it.id == loginId }
 
-                    if (selectedLoginData != null) {
-                        binding.username.setText(selectedLoginData!!.userName)
-                        binding.alternateUsername.setText(selectedLoginData!!.alternateUserName)
-                        binding.pass.setText(selectedLoginData!!.password)
-                        binding.website.setText(selectedLoginData!!.website)
-                        binding.notes.setText(selectedLoginData!!.notes)
-                        binding.itemName.setText(selectedLoginData!!.itemName)
+                selectedLoginData?.let {
+                    with(binding) {
+                        username.setText(it.userName)
+                        alternateUsername.setText(it.alternateUserName)
+                        pass.setText(it.password)
+                        website.setText(it.website)
+                        notes.setText(it.notes)
+                        itemName.setText(it.itemName)
 
-                        val categories = selectedLoginData?.category?.split(", ")?.map { category -> category.trim() } ?: emptyList()
-                        selectedCategories.addAll(categories)
+                        selectedCategories.addAll(it.category!!.split(", ").map { category -> category.trim() })
                         showSelectedCategories()
-                    } else {
-                        Toast.makeText(baseContext, "An error has occurred!", Toast.LENGTH_SHORT).show()
+
+                        createLoginData.setOnClickListener {
+                            val updatedUserName = username.text.toString().trim()
+                            val updatedAlternateUserName = alternateUsername.text.toString().trim()
+                            val updatedPassword = pass.text.toString().trim()
+                            val updatedWebsite = website.text.toString().trim()
+                            val updatedNotes = notes.text.toString().trim()
+                            val updatedItemName = itemName.text.toString().trim()
+
+                            if (validateFields(updatedUserName, updatedPassword, updatedWebsite, updatedItemName, selectedCategories) && isValidUrl(updatedWebsite)) {
+                                val updatedLoginData = LoginData(
+                                    loginId,
+                                    updatedUserName,
+                                    updatedAlternateUserName,
+                                    updatedPassword,
+                                    updatedWebsite,
+                                    updatedNotes,
+                                    updatedItemName,
+                                    selectedCategories.joinToString(", ")
+                                )
+                                loginViewModel.update(updatedLoginData)
+                                finish()
+                            } else {
+                                Toast.makeText(this@CreateLoginData, "Please fill in the required fields!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
-                }
-            } catch (e: Exception) {
-                Toast.makeText(baseContext, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                } ?: Toast.makeText(this@CreateLoginData, "An error has occurred!", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.createLoginData.setOnClickListener {
-            val updatedUserName = binding.username.text.toString().trim()
-            val updatedAlternateUserName = binding.alternateUsername.text.toString().trim()
-            val updatedPassword = binding.pass.text.toString().trim()
-            val updatedWebsite = binding.website.text.toString().trim()
-            val updatedNotes = binding.notes.text.toString().trim()
-            val updatedItemName = binding.itemName.text.toString().trim()
-
-            if (validateFields(updatedUserName, updatedPassword, updatedWebsite, updatedItemName) && isValidUrl(updatedWebsite)) {
-                val updatedLoginData = LoginData(
-                    loginId,
-                    updatedUserName,
-                    updatedAlternateUserName,
-                    updatedPassword,
-                    updatedWebsite,
-                    updatedNotes,
-                    updatedItemName,
-                    selectedCategories.joinToString(", ")
-                )
-
-                loginViewModel.update(updatedLoginData)
-                finish()
-            } else {
-                Toast.makeText(this, "Please fill in the required fields!", Toast.LENGTH_SHORT).show()
-            }
+            saveLoginData()
         }
 
         binding.passwordGenerator.setOnClickListener {
@@ -91,17 +89,46 @@ class CreateLoginData : AppCompatActivity(), PasswordGeneratorDialogListener {
         }
     }
 
+
     override fun onPasswordGenerated(password: String) {
         binding.pass.setText(password)
+    }
+
+    private fun saveLoginData() {
+        val userName = binding.username.text.toString().trim()
+        val alternateUserName = binding.alternateUsername.text.toString().trim()
+        val password = binding.pass.text.toString().trim()
+        val website = binding.website.text.toString().trim()
+        val notes = binding.notes.text.toString().trim()
+        val itemName = binding.itemName.text.toString().trim()
+
+        if (validateFields(userName, password, website, itemName, selectedCategories) && isValidUrl(website)) {
+            val loginData = LoginData(
+                selectedLoginData?.id ?: 0,
+                userName,
+                alternateUserName,
+                password,
+                website,
+                notes,
+                itemName,
+                selectedCategories.joinToString(", ")
+            )
+
+            loginViewModel.insert(loginData)
+            finish()
+        } else {
+            Toast.makeText(this, "Please fill in the required fields!", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun validateFields(
         userName: String,
         password: String,
         website: String,
-        itemName: String
+        itemName: String,
+        selectedCategories: MutableList<String>
     ): Boolean {
-        return userName.isNotEmpty() && password.isNotEmpty() && website.isNotEmpty() && itemName.isNotEmpty()
+        return userName.isNotEmpty() && password.isNotEmpty() && website.isNotEmpty() && itemName.isNotEmpty() && selectedCategories.isNotEmpty()
     }
 
     private fun showPasswordGeneratorDialog() {
@@ -123,6 +150,7 @@ class CreateLoginData : AppCompatActivity(), PasswordGeneratorDialogListener {
         }
         return isValid
     }
+
 
     companion object {
         const val CATEGORY_REQUEST_CODE = 1001

@@ -84,6 +84,8 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
             val intent = Intent(this, CreateLoginData::class.java)
             startActivity(intent)
+            setVisibility(true)
+            setAnimation(true)
 
         }
 
@@ -91,6 +93,8 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
             val intent = Intent(this, CreateAuthenticator::class.java)
             startActivity(intent)
+            setVisibility(true)
+            setAnimation(true)
 
         }
 
@@ -131,37 +135,36 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
             clicked = !clicked
 
+    }
+
+    private fun setAnimation(clicked : Boolean) {
+
+        if (!clicked) {
+            binding.createLogin.visibility = View.VISIBLE
+            binding.createAuthenticator.visibility = View.VISIBLE
+            binding.createLogin.startAnimation(fromBottom)
+            binding.createAuthenticator.startAnimation(fromBottom)
+            binding.fab.startAnimation(rotateOpen)
+        } else {
+            binding.createLogin.visibility = View.INVISIBLE
+            binding.createAuthenticator.visibility = View.INVISIBLE
+            binding.createLogin.startAnimation(toBottom)
+            binding.createAuthenticator.startAnimation(toBottom)
+            binding.fab.startAnimation(rotateClose)
         }
+    }
 
-        private fun setAnimation(clicked : Boolean) {
+    private fun setVisibility(clicked : Boolean) {
+        if (!clicked){
 
-            if (!clicked) {
-                binding.createLogin.visibility = View.VISIBLE
-                binding.createAuthenticator.visibility = View.VISIBLE
-                binding.createLogin.startAnimation(fromBottom)
-                binding.createAuthenticator.startAnimation(fromBottom)
-                binding.fab.startAnimation(rotateOpen)
-            } else {
-                binding.createLogin.visibility = View.INVISIBLE
-                binding.createAuthenticator.visibility = View.INVISIBLE
-                binding.createLogin.startAnimation(toBottom)
-                binding.createAuthenticator.startAnimation(toBottom)
-                binding.fab.startAnimation(rotateClose)
-            }
+            binding.createLogin.visibility = View.VISIBLE
+            binding.createAuthenticator.visibility = View.VISIBLE
+
+        }else{
+
+            binding.createLogin.visibility = View.INVISIBLE
+            binding.createAuthenticator.visibility = View.INVISIBLE
 
         }
-
-        private fun setVisibility(clicked : Boolean) {
-            if (!clicked){
-
-                binding.createLogin.visibility = View.VISIBLE
-                binding.createAuthenticator.visibility = View.VISIBLE
-
-            }else{
-
-                binding.createLogin.visibility = View.INVISIBLE
-                binding.createAuthenticator.visibility = View.INVISIBLE
-
-            }
-        }
+    }
 }
