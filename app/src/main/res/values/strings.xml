@@ -50,5 +50,9 @@
     <string name="copy_password_message">Copy Password!</string>
     <string name="account_name">Account Name</string>
     <string name="your_key">Your key</string>
+    <string name="verify_with_manual_password">Verify with manual password</string>
+    <string name="unlock_with_your_biometrics">Unlock with your biometrics</string>
+    <string name="app_can_authenticate_using_biometrics">App can authenticate using biometrics.</string>
+    <string name="biometric_features_are_currently_unavailable">Biometric features are currently unavailable.</string>
 
 </resources>

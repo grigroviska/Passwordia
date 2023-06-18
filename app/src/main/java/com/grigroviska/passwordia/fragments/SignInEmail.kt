@@ -12,8 +12,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.grigroviska.passwordia.R
@@ -63,7 +62,6 @@ class SignInEmail : Fragment() {
                 "biometric" -> {
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     startActivity(intent)
-                    requireActivity().finish()
                 }
                 else -> {
                     navController.navigate(R.id.action_signInEmail_to_selectEntry)

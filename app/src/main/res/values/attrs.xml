@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleImageView">
+        <attr name="civ_text_color" format="color" />
+        <attr name="civ_text_mode" format="enum">
+            <enum name="text" value="0" />
+            <enum name="initials" value="1" />
+        </attr>
+        <attr name="civ_text_size" format="dimension" />
+        <attr name="civ_text" format="string" />
+    </declare-styleable>
+</resources>

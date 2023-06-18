@@ -78,9 +78,8 @@ class SelectEntry : Fragment() {
                         navController.navigate(action)
 
                     } else {
-                        val goToHome = Intent(requireContext(), MainActivity::class.java)
-                        startActivity(goToHome)
-                        requireActivity().finish()
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
                     }
                 } else {
                     Toast.makeText(requireContext(), getString(R.string.please_select_an_entry_option), Toast.LENGTH_SHORT).show()

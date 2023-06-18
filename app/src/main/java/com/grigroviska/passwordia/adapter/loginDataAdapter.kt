@@ -6,6 +6,11 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +27,7 @@ import com.grigroviska.passwordia.R
 import com.grigroviska.passwordia.activities.CreateLoginData
 import com.grigroviska.passwordia.model.LoginData
 import com.grigroviska.passwordia.viewModel.LoginViewModel
+import de.hdodenhof.circleimageview.CircleImageView
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -57,6 +63,10 @@ class loginDataAdapter(
             optionsImageView.setOnClickListener {
                 showBottomSheetDialog(loginData, itemView.context)
             }
+
+            val websiteInitials = loginData.website?.substring(0, 1)?.toUpperCase()
+            val profileImage: CircleImageView = itemView.findViewById(R.id.profileImageView)
+            profileImage.setImageBitmap(generateInitialsBitmap(websiteInitials!!))
 
             itemView.setOnClickListener {
                 val context = itemView.context
@@ -97,7 +107,12 @@ class loginDataAdapter(
 
     private fun openWebsite(url: String, context: Context) {
         try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            val validUrl = if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                "http://$url"
+            } else {
+                url
+            }
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(validUrl))
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             Toast.makeText(context, "Could not open website", Toast.LENGTH_SHORT).show()
@@ -192,5 +207,20 @@ class loginDataAdapter(
         this.loginDataList = loginDataList
         notifyDataSetChanged()
     }
-
+    private fun generateInitialsBitmap(initials: String): Bitmap {
+        val width = 60
+        val height = 60
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint().apply {
+            color = Color.WHITE
+            textSize = 24f
+        }
+        val bounds = Rect()
+        paint.getTextBounds(initials, 0, initials.length, bounds)
+        val x = (width - bounds.width()) / 2f
+        val y = (height + bounds.height()) / 2f
+        canvas.drawText(initials, x, y, paint)
+        return bitmap
+    }
 }

@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import com.grigroviska.passwordia.R
 import com.grigroviska.passwordia.databinding.ActivityMainBinding
 import java.util.concurrent.Executor
 
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
+    private var authenticationFailedCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +55,8 @@ class MainActivity : AppCompatActivity() {
 
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
-                Toast.makeText(this@MainActivity,"Authentication failed.",Toast.LENGTH_SHORT).show()
+
+                Toast.makeText(this@MainActivity, "Authentication failed.", Toast.LENGTH_SHORT).show()
             }
 
         })
@@ -88,13 +91,13 @@ class MainActivity : AppCompatActivity() {
             BiometricManager.BIOMETRIC_SUCCESS ->{
 
                 Log.d("Passwordia_APP","App can authenticate using biometrics.")
-                binding.infoText.text = "App can authenticate using biometrics."
+                binding.infoText.text = getString(R.string.app_can_authenticate_using_biometrics)
 
             }
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE->{
 
                 Log.d("Passwordia_APP","Biometric features are currently unavailable.")
-                binding.infoText.text = "Biometric features are currently unavailable."
+                binding.infoText.text = getString(R.string.biometric_features_are_currently_unavailable)
 
 
             }
@@ -113,4 +116,5 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
 }

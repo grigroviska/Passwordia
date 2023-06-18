@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.SignInEmail"
-    android:background="@color/fourthColor">
+    android:background="@color/backgroundColor">
 
     <TextView
         android:id="@+id/signInInfoText"

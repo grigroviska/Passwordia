@@ -10,12 +10,17 @@
         android:layout_marginEnd="10dp"
         >
 
-        <ImageView
-            android:id="@+id/itemView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:src="@mipmap/ic_launcher_round" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/firstColor"
+            app:civ_circle_background_color="@color/firstColor"
+            app:civ_text_size="20sp"
+            app:civ_text_color="@color/white"
+            app:civ_text=""
+            app:civ_text_mode="initials"  />
 
         <LinearLayout
             android:id="@+id/informationSection"
@@ -25,7 +30,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginEnd="20dp"
             android:layout_toStartOf="@+id/copyPassword"
-            android:layout_toEndOf="@id/itemView"
+            android:layout_toEndOf="@id/profileImageView"
             android:orientation="vertical">
 
             <TextView
