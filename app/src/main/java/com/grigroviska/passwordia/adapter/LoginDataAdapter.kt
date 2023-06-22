@@ -6,11 +6,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -24,16 +19,20 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.grigroviska.passwordia.R
+import com.grigroviska.passwordia.TOTPGenerator
+import com.grigroviska.passwordia.activities.CreateAuthenticator
 import com.grigroviska.passwordia.activities.CreateLoginData
 import com.grigroviska.passwordia.model.LoginData
 import com.grigroviska.passwordia.viewModel.LoginViewModel
 import de.hdodenhof.circleimageview.CircleImageView
 import java.net.MalformedURLException
 import java.net.URL
+import java.util.Timer
+import java.util.TimerTask
 
-class loginDataAdapter(
+class LoginDataAdapter(
     private var loginDataList: List<LoginData>
-) : RecyclerView.Adapter<loginDataAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<LoginDataAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -50,27 +49,49 @@ class loginDataAdapter(
         return loginDataList.size
     }
 
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val optionsImageView: ImageView = itemView.findViewById(R.id.options)
         private val websiteTextView: TextView = itemView.findViewById(R.id.websiteFromRoom)
         private val usernameTextView: TextView = itemView.findViewById(R.id.usernameFromRoom)
+        private val totpUpdateInterval: Long = 30 * 1000
+        private val totpGenerator: TOTPGenerator = TOTPGenerator()
+        private var timer: Timer? = null
 
         fun bind(loginData: LoginData) {
-            websiteTextView.text = loginData.website?.let { getDomainFromUrl(it) }
-                ?.let { truncateString(it) }
-            usernameTextView.text = loginData.userName?.let { truncateString(it) }
+            if (loginData.accountName != null && loginData.accountName != "") {
+                websiteTextView.text = loginData.accountName
+                val accountInitials = loginData.accountName.substring(0, 1).toUpperCase()
+                val profileImage: CircleImageView = itemView.findViewById(R.id.profileImageView)
+                profileImage.setImageBitmap(
+                    BitmapUtils.generateInitialsBitmap(itemView.context, accountInitials, 24f, 60)
+                )
+
+                startTOTPTimer(loginData.totpKey)
+
+            } else {
+                websiteTextView.text = loginData.website?.let { getDomainFromUrl(it) }
+                    ?.let { truncateString(it) }
+                usernameTextView.text = loginData.userName?.let { truncateString(it) }
+                val websiteInitials = loginData.website?.substring(0, 1)?.toUpperCase()
+                val profileImage: CircleImageView = itemView.findViewById(R.id.profileImageView)
+                profileImage.setImageBitmap(
+                    BitmapUtils.generateInitialsBitmap(itemView.context, websiteInitials!!, 24f, 60)
+                )
+            }
+
 
             optionsImageView.setOnClickListener {
                 showBottomSheetDialog(loginData, itemView.context)
             }
 
-            val websiteInitials = loginData.website?.substring(0, 1)?.toUpperCase()
-            val profileImage: CircleImageView = itemView.findViewById(R.id.profileImageView)
-            profileImage.setImageBitmap(generateInitialsBitmap(websiteInitials!!))
-
             itemView.setOnClickListener {
                 val context = itemView.context
-                val intent = Intent(context, CreateLoginData::class.java)
+                val intent = if (loginData.accountName != null) {
+                    Intent(context, CreateAuthenticator::class.java)
+                } else {
+                    Intent(context, CreateLoginData::class.java)
+                }
                 intent.putExtra("loginId", loginData.id)
                 context.startActivity(intent)
             }
@@ -82,6 +103,21 @@ class loginDataAdapter(
                 clipboard.setPrimaryClip(clip)
                 Toast.makeText(itemView.context, "Copy Password!", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        private fun startTOTPTimer(totpKey: String?) {
+            timer?.cancel()
+            timer = Timer()
+
+            timer?.schedule(object : TimerTask() {
+                override fun run() {
+                    val totpCode = totpGenerator.generateTOTP(totpKey!!)
+
+                    itemView.post {
+                        usernameTextView.text = totpCode
+                    }
+                }
+            }, 0, totpUpdateInterval)
         }
     }
 
@@ -207,20 +243,5 @@ class loginDataAdapter(
         this.loginDataList = loginDataList
         notifyDataSetChanged()
     }
-    private fun generateInitialsBitmap(initials: String): Bitmap {
-        val width = 60
-        val height = 60
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        val paint = Paint().apply {
-            color = Color.WHITE
-            textSize = 24f
-        }
-        val bounds = Rect()
-        paint.getTextBounds(initials, 0, initials.length, bounds)
-        val x = (width - bounds.width()) / 2f
-        val y = (height + bounds.height()) / 2f
-        canvas.drawText(initials, x, y, paint)
-        return bitmap
-    }
+
 }

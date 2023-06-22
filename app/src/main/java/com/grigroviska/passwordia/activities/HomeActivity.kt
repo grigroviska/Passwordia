@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.grigroviska.passwordia.R
-import com.grigroviska.passwordia.adapter.loginDataAdapter
+import com.grigroviska.passwordia.adapter.LoginDataAdapter
 import com.grigroviska.passwordia.databinding.ActivityHomeBinding
 import com.grigroviska.passwordia.model.LoginData
 import com.grigroviska.passwordia.viewModel.LoginViewModel
@@ -23,7 +23,7 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var auth: FirebaseAuth
-    private var adapter: loginDataAdapter? = null
+    private var adapter: LoginDataAdapter? = null
     private var loginDataList: List<LoginData> = emptyList()
     private lateinit var viewModel: LoginViewModel
     private lateinit var searchView : SearchView
@@ -40,10 +40,10 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        this.window.setFlags(
+        /*this.window.setFlags(
             WindowManager.LayoutParams.FLAG_SECURE,
             WindowManager.LayoutParams.FLAG_SECURE
-        )
+        )*/
 
         auth = FirebaseAuth.getInstance()
         searchView = binding.searchBox
@@ -53,7 +53,7 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
             viewModel.allLogin.observe(this) { loginData ->
                 loginDataList = loginData
                 if (adapter == null) {
-                    adapter = loginDataAdapter(loginDataList)
+                    adapter = LoginDataAdapter(loginDataList)
                     binding.dataList.adapter = adapter
                     binding.dataList.layoutManager = LinearLayoutManager(this)
                 } else {
@@ -117,8 +117,9 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
             val isItemNameMatch = loginData.itemName?.contains(query, ignoreCase = true) ?: false
             val isUserNameMatch = loginData.userName?.contains(query, ignoreCase = true) ?: false
             val isWebsiteMatch = loginData.website?.contains(query, ignoreCase = true) ?: false
+            val isAuthenticator = loginData.accountName?.contains(query, ignoreCase = true) ?: false
 
-            isItemNameMatch || isUserNameMatch || isWebsiteMatch
+            isItemNameMatch || isUserNameMatch || isWebsiteMatch || isAuthenticator
         }
 
         adapter?.let {
