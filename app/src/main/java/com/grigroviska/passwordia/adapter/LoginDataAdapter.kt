@@ -68,7 +68,6 @@ class LoginDataAdapter(
                 )
 
                 startTOTPTimer(loginData.totpKey)
-
             } else {
                 websiteTextView.text = loginData.website?.let { getDomainFromUrl(it) }
                     ?.let { truncateString(it) }
