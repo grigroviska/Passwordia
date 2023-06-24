@@ -37,7 +37,7 @@
         android:id="@+id/dataList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -113,6 +113,21 @@
         app:layout_constraintEnd_toEndOf="@id/fab"
         android:src="@drawable/authenticator_icon" />
 
+    <TextView
+        android:id="@+id/authText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:text=" Authenticator "
+        android:background="@color/secondColor"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="@+id/createAuthenticator"
+        app:layout_constraintBottom_toBottomOf="@id/createAuthenticator"
+        app:layout_constraintEnd_toStartOf="@id/createAuthenticator"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/createLogin"
         android:layout_width="wrap_content"
@@ -127,5 +142,20 @@
         app:layout_constraintEnd_toEndOf="@id/createAuthenticator"
         android:src="@drawable/account_icon"
         />
+
+    <TextView
+        android:id="@+id/loginText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:background="@color/secondColor"
+        android:text=" Login "
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="@+id/createLogin"
+        app:layout_constraintBottom_toBottomOf="@id/createLogin"
+        app:layout_constraintEnd_toStartOf="@id/createLogin"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

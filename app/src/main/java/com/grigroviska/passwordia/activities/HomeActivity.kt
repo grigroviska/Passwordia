@@ -143,12 +143,16 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
         if (!clicked) {
             binding.createLogin.visibility = View.VISIBLE
             binding.createAuthenticator.visibility = View.VISIBLE
+            binding.loginText.visibility = View.VISIBLE
+            binding.authText.visibility = View.VISIBLE
             binding.createLogin.startAnimation(fromBottom)
             binding.createAuthenticator.startAnimation(fromBottom)
             binding.fab.startAnimation(rotateOpen)
         } else {
             binding.createLogin.visibility = View.INVISIBLE
             binding.createAuthenticator.visibility = View.INVISIBLE
+            binding.loginText.visibility = View.INVISIBLE
+            binding.authText.visibility = View.INVISIBLE
             binding.createLogin.startAnimation(toBottom)
             binding.createAuthenticator.startAnimation(toBottom)
             binding.fab.startAnimation(rotateClose)
@@ -157,14 +161,18 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
     private fun setVisibility(clicked : Boolean) {
         if (!clicked){
-
+            binding.loginText.visibility = View.VISIBLE
+            binding.authText.visibility = View.VISIBLE
             binding.createLogin.visibility = View.VISIBLE
             binding.createAuthenticator.visibility = View.VISIBLE
+
 
         }else{
 
             binding.createLogin.visibility = View.INVISIBLE
             binding.createAuthenticator.visibility = View.INVISIBLE
+            binding.loginText.visibility = View.INVISIBLE
+            binding.authText.visibility = View.INVISIBLE
 
         }
     }

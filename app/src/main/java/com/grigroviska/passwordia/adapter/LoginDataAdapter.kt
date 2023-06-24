@@ -55,6 +55,7 @@ class LoginDataAdapter(
         private val optionsImageView: ImageView = itemView.findViewById(R.id.options)
         private val websiteTextView: TextView = itemView.findViewById(R.id.websiteFromRoom)
         private val usernameTextView: TextView = itemView.findViewById(R.id.usernameFromRoom)
+        private val noteTextView: TextView = itemView.findViewById(R.id.noteFromRoom)
         private val totpUpdateInterval: Long = 30 * 1000
         private val totpGenerator: TOTPGenerator = TOTPGenerator()
         private var timer: Timer? = null
@@ -78,6 +79,12 @@ class LoginDataAdapter(
                 profileImage.setImageBitmap(
                     BitmapUtils.generateInitialsBitmap(itemView.context, websiteInitials!!, 24f, 60)
                 )
+                if (loginData.notes != null && loginData.notes != "") {
+                    noteTextView.visibility = View.VISIBLE
+                    noteTextView.text = "Note : " + loginData.notes
+                } else {
+                    noteTextView.visibility = View.GONE
+                }
             }
 
 

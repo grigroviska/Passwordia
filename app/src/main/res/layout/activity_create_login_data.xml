@@ -92,6 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:textColor="@color/white"
                 android:text="@string/generate"
                 android:layout_gravity="center_vertical"/>
 
@@ -165,6 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:text="ADD A Category"
+                android:textColor="@color/white"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_marginStart="45dp"
                 android:layout_marginEnd="45dp"
