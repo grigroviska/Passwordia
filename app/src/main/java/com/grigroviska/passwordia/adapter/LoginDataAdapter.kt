@@ -24,6 +24,7 @@ import com.grigroviska.passwordia.activities.CreateAuthenticator
 import com.grigroviska.passwordia.activities.CreateLoginData
 import com.grigroviska.passwordia.model.LoginData
 import com.grigroviska.passwordia.viewModel.LoginViewModel
+import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import de.hdodenhof.circleimageview.CircleImageView
 import java.net.MalformedURLException
 import java.net.URL
@@ -108,15 +109,31 @@ class LoginDataAdapter(
             timer?.cancel()
             timer = Timer()
 
-            timer?.schedule(object : TimerTask() {
+            val progressbar : CircularProgressBar = itemView.findViewById(R.id.progressbar)
+
+            progressbar.visibility = View.VISIBLE
+
+            timer?.scheduleAtFixedRate(object : TimerTask() {
+                var progress = 0
+
                 override fun run() {
                     val totpCode = totpGenerator.generateTOTP(totpKey!!)
 
                     itemView.post {
-                        usernameTextView.text = totpCode
+                        if(progress == 0) {
+                            usernameTextView.text = totpCode
+                        }
+
+                        progress += 1
+                        if (progress <= 30) {
+                            progressbar.setProgressWithAnimation(progress.toFloat())
+                        } else {
+                            progress = 0
+                            progressbar.setProgressWithAnimation(progress.toFloat())
+                        }
                     }
                 }
-            }, 0, totpUpdateInterval)
+            }, 0, 1000)
         }
     }
 

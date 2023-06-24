@@ -54,5 +54,6 @@
     <string name="unlock_with_your_biometrics">Unlock with your biometrics</string>
     <string name="app_can_authenticate_using_biometrics">App can authenticate using biometrics.</string>
     <string name="biometric_features_are_currently_unavailable">Biometric features are currently unavailable.</string>
+    <string name="you_do_not_have_a_login_or_an_authenticator_record_yet_please_add_from_the_button_below">You do not have a login or an authenticator record yet, please add from the button below.</string>
 
 </resources>

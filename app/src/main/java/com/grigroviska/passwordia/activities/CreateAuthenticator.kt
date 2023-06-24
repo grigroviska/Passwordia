@@ -30,6 +30,43 @@ class CreateAuthenticator : AppCompatActivity() {
 
         loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
 
+        val loginId: Int = intent.getIntExtra("loginId", 999999)
+
+        if (loginId != 999999) {
+            loginViewModel.allLogin.observe(this@CreateAuthenticator) { loginDataList ->
+                loginData = loginDataList.find { it.id == loginId }
+
+                loginData?.let {
+                    with(binding) {
+                        accountName.setText(it.accountName)
+
+                        createAuthData.setOnClickListener {
+                            val updateAccountName = accountName.text.toString().trim()
+
+                            if (updateAccountName.isNotEmpty()) {
+                                val updatedAuthenticatorData = LoginData(
+                                    loginId,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    updateAccountName,
+                                    null
+                                )
+                                loginViewModel.update(updatedAuthenticatorData)
+                                finish()
+                            } else {
+                                Toast.makeText(this@CreateAuthenticator, "Please fill in the required fields!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                } ?: Toast.makeText(this@CreateAuthenticator, "An error has occurred!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         binding.secretKeyLayout.setEndIconOnClickListener {
 
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -41,7 +78,7 @@ class CreateAuthenticator : AppCompatActivity() {
 
         }
 
-        binding.saveData.setOnClickListener {
+        binding.createAuthData.setOnClickListener {
 
             saveLoginData()
 

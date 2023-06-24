@@ -8,4 +8,9 @@
         <item name="android:windowTranslucentStatus">false</item>
     </style>
 
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="android:background">@drawable/search_view_background</item>
+    </style>
+
+
 </resources>
