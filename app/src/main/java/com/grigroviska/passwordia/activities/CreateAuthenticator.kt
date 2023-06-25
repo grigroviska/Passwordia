@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -39,25 +40,34 @@ class CreateAuthenticator : AppCompatActivity() {
                 loginData?.let {
                     with(binding) {
                         accountName.setText(it.accountName)
+                        secretKeyLayout.visibility = View.INVISIBLE
+                        secretKey.visibility = View.INVISIBLE
 
                         createAuthData.setOnClickListener {
                             val updateAccountName = accountName.text.toString().trim()
 
                             if (updateAccountName.isNotEmpty()) {
-                                val updatedAuthenticatorData = LoginData(
-                                    loginId,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    updateAccountName,
-                                    null
-                                )
-                                loginViewModel.update(updatedAuthenticatorData)
-                                finish()
+                                try {
+                                    val updatedAuthenticatorData = LoginData(
+                                        loginId,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        updateAccountName,
+                                        loginData!!.totpKey
+                                    )
+                                    loginViewModel.update(updatedAuthenticatorData)
+                                    finish()
+                                }catch (e: Exception){
+
+                                    Toast.makeText(this@CreateAuthenticator, e.localizedMessage, Toast.LENGTH_SHORT).show()
+
+                                }
+
                             } else {
                                 Toast.makeText(this@CreateAuthenticator, "Please fill in the required fields!", Toast.LENGTH_SHORT).show()
                             }

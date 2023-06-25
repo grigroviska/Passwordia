@@ -60,6 +60,7 @@ class LoginDataAdapter(
         private val totpGenerator: TOTPGenerator = TOTPGenerator()
         private var timer: Timer? = null
 
+
         fun bind(loginData: LoginData) {
             if (loginData.accountName != null && loginData.accountName != "") {
                 websiteTextView.text = loginData.accountName
@@ -190,7 +191,18 @@ class LoginDataAdapter(
         val openWebsite = view.findViewById<LinearLayout>(R.id.openWebsiteLayout)
         val delete = view.findViewById<LinearLayout>(R.id.deleteLayout)
 
-        websiteName.text = loginData.website
+        if(loginData.accountName != null){
+
+            websiteName.text = loginData.accountName
+            copyEmail.visibility = View.GONE
+            copyUsername.visibility = View.GONE
+            openWebsite.visibility = View.GONE
+
+        }else{
+
+            websiteName.text = loginData.website
+
+        }
 
         copyEmail.setOnClickListener {
             val clipboard =

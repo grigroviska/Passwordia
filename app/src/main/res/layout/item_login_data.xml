@@ -43,7 +43,7 @@
             android:layout_height="match_parent"
             app:cpb_progress="0"
             app:cpb_progress_max="30"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:cpb_progressbar_color="@color/helpColor"
             app:cpb_background_progressbar_color="@color/firstColor"
             app:cpb_progressbar_width="4dp"
@@ -67,6 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/website"
+                android:textSize="18sp"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 
@@ -84,7 +85,7 @@
                 android:layout_marginTop="2dp"
                 android:text="@string/notes"
                 android:visibility="gone"
-                android:textColor="@color/white" />
+                android:textColor="@color/helpColor" />
 
         </LinearLayout>
 

@@ -47,8 +47,6 @@ class MainActivity : AppCompatActivity() {
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
-                Toast.makeText(this@MainActivity,"Authentication succeeded!",Toast.LENGTH_LONG).show()
-
                 val intent = Intent(this@MainActivity, HomeActivity::class.java)
                 startActivity(intent)
             }

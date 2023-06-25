@@ -19,16 +19,15 @@
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchBox"
+            style="@style/SearchViewStyle"
             android:layout_width="350dp"
             android:layout_height="50dp"
-            style="@style/SearchViewStyle"
-            app:defaultQueryHint="Search..."
             android:layout_centerInParent="true"
-            app:iconifiedByDefault="false"
-            app:searchIcon="@drawable/search_icon"
             android:textColorHint="@color/white"
+            app:defaultQueryHint="Search..."
             app:goIcon="@drawable/settings_icon"
-            />
+            app:iconifiedByDefault="false"
+            app:searchIcon="@drawable/search_icon" />
 
     </RelativeLayout>
 
@@ -37,7 +36,6 @@
         android:id="@+id/dataList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="5dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -81,6 +79,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View
+        android:id="@+id/overlayView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="#90000000"
+        android:visibility="gone" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -157,5 +166,7 @@
         app:layout_constraintTop_toTopOf="@+id/createLogin"
         app:layout_constraintBottom_toBottomOf="@id/createLogin"
         app:layout_constraintEnd_toStartOf="@id/createLogin"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

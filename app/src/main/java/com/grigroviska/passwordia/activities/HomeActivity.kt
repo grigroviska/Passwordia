@@ -27,6 +27,7 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
     private var loginDataList: List<LoginData> = emptyList()
     private lateinit var viewModel: LoginViewModel
     private lateinit var searchView : SearchView
+    private lateinit var overlayView: View
 
     //Animation
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim) }
@@ -47,6 +48,8 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
         auth = FirebaseAuth.getInstance()
         searchView = binding.searchBox
+        overlayView = binding.overlayView
+
 
         try {
             viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
@@ -98,6 +101,24 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
         }
 
+        binding.loginText.setOnClickListener {
+
+            val intent = Intent(this, CreateLoginData::class.java)
+            startActivity(intent)
+            setVisibility(true)
+            setAnimation(true)
+
+        }
+
+        binding.authText.setOnClickListener {
+
+            val intent = Intent(this, CreateAuthenticator::class.java)
+            startActivity(intent)
+            setVisibility(true)
+            setAnimation(true)
+
+        }
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 search(query)
@@ -110,6 +131,10 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
                 return false
             }
         })
+
+        overlayView.setOnClickListener {
+            onAddButtonClicked()
+        }
     }
 
     private fun search(query: String) {
@@ -141,6 +166,7 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
     private fun setAnimation(clicked : Boolean) {
 
         if (!clicked) {
+            overlayView.visibility = View.VISIBLE
             binding.createLogin.visibility = View.VISIBLE
             binding.createAuthenticator.visibility = View.VISIBLE
             binding.loginText.visibility = View.VISIBLE
@@ -149,6 +175,7 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
             binding.createAuthenticator.startAnimation(fromBottom)
             binding.fab.startAnimation(rotateOpen)
         } else {
+            overlayView.visibility = View.INVISIBLE
             binding.createLogin.visibility = View.INVISIBLE
             binding.createAuthenticator.visibility = View.INVISIBLE
             binding.loginText.visibility = View.INVISIBLE
