@@ -8,6 +8,7 @@
     <color name="backgroundColor">#1E2D2F</color>
     <color name="feedColor">#182425</color>
     <color name="helpColor">#CEC7BF</color>
+    <color name="progressBarColor">#68936A</color>
     <color name="selectedColor">#8AA8C5</color>
 
 </resources>

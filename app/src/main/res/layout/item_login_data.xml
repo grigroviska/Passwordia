@@ -45,9 +45,9 @@
             app:cpb_progress_max="30"
             android:visibility="gone"
             app:cpb_progressbar_color="@color/helpColor"
-            app:cpb_background_progressbar_color="@color/firstColor"
-            app:cpb_progressbar_width="4dp"
-            app:cpb_background_progressbar_width="4dp" />
+            app:cpb_background_progressbar_color="@color/progressBarColor"
+            app:cpb_progressbar_width="6dp"
+            app:cpb_background_progressbar_width="6dp" />
 
     </FrameLayout>
 

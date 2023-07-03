@@ -26,6 +26,13 @@ import com.grigroviska.passwordia.model.LoginData
 import com.grigroviska.passwordia.viewModel.LoginViewModel
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.Timer
@@ -56,7 +63,7 @@ class LoginDataAdapter(
         private val websiteTextView: TextView = itemView.findViewById(R.id.websiteFromRoom)
         private val usernameTextView: TextView = itemView.findViewById(R.id.usernameFromRoom)
         private val noteTextView: TextView = itemView.findViewById(R.id.noteFromRoom)
-        private val totpUpdateInterval: Long = 30 * 1000
+        private var totpJob: Job? = null
         private val totpGenerator: TOTPGenerator = TOTPGenerator()
         private var timer: Timer? = null
 
@@ -114,21 +121,17 @@ class LoginDataAdapter(
         }
 
         private fun startTOTPTimer(totpKey: String?) {
-            timer?.cancel()
-            timer = Timer()
-
-            val progressbar : CircularProgressBar = itemView.findViewById(R.id.progressbar)
-
+            totpJob?.cancel()
+            val progressbar: CircularProgressBar = itemView.findViewById(R.id.progressbar)
             progressbar.visibility = View.VISIBLE
 
-            timer?.scheduleAtFixedRate(object : TimerTask() {
+            totpJob = CoroutineScope(Dispatchers.Main).launch {
                 var progress = 0
-
-                override fun run() {
+                while (isActive) {
                     val totpCode = totpGenerator.generateTOTP(totpKey!!)
 
-                    itemView.post {
-                        if(progress == 0) {
+                    withContext(Dispatchers.Main) {
+                        if (progress == 0) {
                             usernameTextView.text = totpCode
                         }
 
@@ -140,11 +143,12 @@ class LoginDataAdapter(
                             progressbar.setProgressWithAnimation(progress.toFloat())
                         }
                     }
+
+                    delay(1000)
                 }
-            }, 0, 1000)
+            }
         }
     }
-
     private fun getDomainFromUrl(url: String): String {
         return try {
             val domain = URL(url).host
@@ -190,17 +194,21 @@ class LoginDataAdapter(
         val copyPassword = view.findViewById<LinearLayout>(R.id.copyPasswordLayout)
         val openWebsite = view.findViewById<LinearLayout>(R.id.openWebsiteLayout)
         val delete = view.findViewById<LinearLayout>(R.id.deleteLayout)
+        val copyTotp = view.findViewById<LinearLayout>(R.id.copyTotpLayout)
 
         if(loginData.accountName != null){
 
+            copyTotp.visibility = View.VISIBLE
             websiteName.text = loginData.accountName
             copyEmail.visibility = View.GONE
             copyUsername.visibility = View.GONE
             openWebsite.visibility = View.GONE
 
+
         }else{
 
             websiteName.text = loginData.website
+            copyTotp.visibility = View.GONE
 
         }
 

@@ -22,6 +22,7 @@
         android:id="@+id/emailLayout"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
+        style="@style/InputLayoutStyle"
         app:layout_constraintBottom_toTopOf="@+id/nextPage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -19,6 +19,9 @@
         android:theme="@style/Theme.Passwordia"
         tools:targetApi="31">
         <activity
+            android:name=".activities.SettingsMenu"
+            android:exported="false" />
+        <activity
             android:name=".activities.AddCategory"
             android:exported="false" />
         <activity

@@ -13,7 +13,7 @@ object BitmapUtils {
         val bitmap = Bitmap.createBitmap(imageSize, imageSize, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val paint = Paint().apply {
-            color = ContextCompat.getColor(context, R.color.firstColor)
+            color = ContextCompat.getColor(context, R.color.helpColor)
             this.textSize = textSize
             isAntiAlias = true
         }
@@ -26,7 +26,7 @@ object BitmapUtils {
         canvas.drawCircle(centerX, centerY, radius, paint)
 
         // Set paint properties for drawing initials
-        paint.color = Color.WHITE
+        paint.color = ContextCompat.getColor(context, R.color.feedColor)
         paint.textAlign = Paint.Align.CENTER
 
         // Calculate text bounds

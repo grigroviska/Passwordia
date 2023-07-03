@@ -1,5 +1,6 @@
 package com.grigroviska.passwordia.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,11 +8,14 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.grigroviska.passwordia.R
 import com.grigroviska.passwordia.adapter.LoginDataAdapter
@@ -37,6 +41,7 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
     private var clicked = false
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -134,6 +139,40 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
         overlayView.setOnClickListener {
             onAddButtonClicked()
+        }
+
+        binding.menuButton.setOnClickListener{
+
+            val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_menu, null)
+            val bottomSheetDialog = BottomSheetDialog(this)
+            bottomSheetDialog.setContentView(bottomSheetView)
+            bottomSheetDialog.show()
+
+            val home = bottomSheetView.findViewById<LinearLayout>(R.id.homeLayout)
+            val generator = bottomSheetView.findViewById<LinearLayout>(R.id.generateLayout)
+            val settings = bottomSheetView.findViewById<LinearLayout>(R.id.settingsLayout)
+
+            home.setOnClickListener {
+
+                val intent = Intent(this@HomeActivity, HomeActivity::class.java)
+                startActivity(intent)
+
+            }
+
+            generator.setOnClickListener {
+
+                val intent = Intent(this@HomeActivity, Generator::class.java)
+                startActivity(intent)
+
+            }
+
+            settings.setOnClickListener {
+
+                val intent = Intent(this@HomeActivity, SettingsMenu::class.java)
+                startActivity(intent)
+
+            }
+
         }
     }
 
