@@ -96,9 +96,8 @@ class LoginDataAdapter(
                 }
             }
 
-
             optionsImageView.setOnClickListener {
-                showBottomSheetDialog(loginData, itemView.context)
+                showBottomSheetDialog(loginData, itemView.context, itemView)
             }
 
             itemView.setOnClickListener {
@@ -113,11 +112,20 @@ class LoginDataAdapter(
             }
 
             itemView.findViewById<ImageView>(R.id.copyPassword).setOnClickListener {
-                val clipboard =
-                    itemView.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("password", loginData.password)
-                clipboard.setPrimaryClip(clip)
-                Toast.makeText(itemView.context, "Copy Password!", Toast.LENGTH_SHORT).show()
+                if (loginData.accountName == null){
+                    val clipboard =
+                        itemView.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText("password", loginData.password)
+                    clipboard.setPrimaryClip(clip)
+                    Toast.makeText(itemView.context, "Copy Password!", Toast.LENGTH_SHORT).show()
+                }else{
+
+                    val clipboard = itemView.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText("username", usernameTextView.text)
+                    clipboard.setPrimaryClip(clip)
+                    Toast.makeText(itemView.context, "Copy Totp!", Toast.LENGTH_SHORT).show()
+
+                }
             }
         }
 
@@ -184,7 +192,7 @@ class LoginDataAdapter(
         }
     }
 
-    private fun showBottomSheetDialog(loginData: LoginData, context: Context) {
+    private fun showBottomSheetDialog(loginData: LoginData, context: Context, itemView: View) {
         val bottomSheetDialog = BottomSheetDialog(context)
         val view = LayoutInflater.from(context).inflate(R.layout.options_bottom_sheet, null)
         bottomSheetDialog.setContentView(view)
@@ -195,21 +203,19 @@ class LoginDataAdapter(
         val copyPassword = view.findViewById<LinearLayout>(R.id.copyPasswordLayout)
         val openWebsite = view.findViewById<LinearLayout>(R.id.openWebsiteLayout)
         val delete = view.findViewById<LinearLayout>(R.id.deleteLayout)
-        val copyTotp = view.findViewById<LinearLayout>(R.id.copyTotpLayout)
 
         if(loginData.accountName != null){
 
-            copyTotp.visibility = View.VISIBLE
             websiteName.text = loginData.accountName
             copyEmail.visibility = View.GONE
             copyUsername.visibility = View.GONE
+            copyPassword.visibility = View.GONE
             openWebsite.visibility = View.GONE
 
 
         }else{
 
             websiteName.text = loginData.website
-            copyTotp.visibility = View.GONE
 
         }
 
@@ -237,16 +243,22 @@ class LoginDataAdapter(
         }
 
         copyPassword.setOnClickListener {
-            val clipboard =
-                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("password", loginData.password)
-            clipboard.setPrimaryClip(clip)
-            Toast.makeText(
-                context,
-                context.getString(R.string.copy_password_message),
-                Toast.LENGTH_SHORT
-            ).show()
-            bottomSheetDialog.dismiss()
+            if(loginData.accountName == null){
+                val clipboard =
+                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("password", loginData.password)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.copy_password_message),
+                    Toast.LENGTH_SHORT
+                ).show()
+                bottomSheetDialog.dismiss()
+            }
+            else {
+
+            }
+
         }
 
         openWebsite.setOnClickListener {
