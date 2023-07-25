@@ -6,6 +6,7 @@
     <color name="secondColor">#404E5C</color>
     <color name="thirdColor">#4F5F6E</color>
     <color name="backgroundColor">#1E2D2F</color>
+    <color name="backgroundDarkColor">#131D1E</color>
     <color name="feedColor">#182425</color>
     <color name="helpColor">#CEC7BF</color>
     <color name="progressBarColor">#68936A</color>

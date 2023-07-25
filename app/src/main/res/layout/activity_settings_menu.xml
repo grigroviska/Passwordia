@@ -57,7 +57,7 @@
                         android:textSize="24sp"/>
 
                     <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/biometric"
+                        android:id="@+id/biometricSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"
@@ -80,9 +80,73 @@
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="@color/progressBarColor"
+                    android:text="Security"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/backupImageView"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/backup_icon"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/backupImageView"
+                        android:layout_marginStart="20dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Backup"
+                            android:layout_centerVertical="true"
+                            android:textSize="24sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@+id/sendFeedbackIcon"
+                            android:text="Take a backup just in case"
+                            android:layout_centerVertical="true"
+                            android:textSize="18sp"/>
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:src="@drawable/continue_icon"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"/>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/progressBarColor"
                     android:text="Help"/>
 
                 <RelativeLayout
+                    android:id="@+id/sendFeedbackLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -112,6 +176,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:padding="5dp"
                             android:layout_toEndOf="@+id/sendFeedbackIcon"
                             android:text="Report technical issues or suggest new features"
                             android:layout_centerVertical="true"
@@ -155,6 +220,46 @@
                             android:layout_height="wrap_content"
                             android:layout_toEndOf="@+id/sendFeedbackIcon"
                             android:text="Share app with your friends :)"
+                            android:layout_centerVertical="true"
+                            android:textSize="18sp"/>
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/rateUsIcon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/share_icon"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/rateUsIcon"
+                        android:layout_marginStart="20dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rate Us"
+                            android:layout_centerVertical="true"
+                            android:textSize="24sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="You can support us"
                             android:layout_centerVertical="true"
                             android:textSize="18sp"/>
 

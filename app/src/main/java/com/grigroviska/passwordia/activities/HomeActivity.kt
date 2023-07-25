@@ -1,15 +1,12 @@
 package com.grigroviska.passwordia.activities
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
@@ -41,7 +38,6 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
     private var clicked = false
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -131,11 +127,11 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-
                 search(newText)
                 return false
             }
         })
+
 
         overlayView.setOnClickListener {
             onAddButtonClicked()
@@ -156,6 +152,7 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
                 val intent = Intent(this@HomeActivity, HomeActivity::class.java)
                 startActivity(intent)
+                bottomSheetDialog.dismiss()
 
             }
 
@@ -163,6 +160,7 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
                 val intent = Intent(this@HomeActivity, Generator::class.java)
                 startActivity(intent)
+                bottomSheetDialog.dismiss()
 
             }
 
@@ -170,9 +168,9 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
                 val intent = Intent(this@HomeActivity, SettingsMenu::class.java)
                 startActivity(intent)
+                bottomSheetDialog.dismiss()
 
             }
-
         }
     }
 

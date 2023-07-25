@@ -36,7 +36,6 @@ import kotlinx.coroutines.withContext
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.Timer
-import java.util.TimerTask
 
 class LoginDataAdapter(
     private var loginDataList: List<LoginData>
@@ -63,6 +62,7 @@ class LoginDataAdapter(
         private val websiteTextView: TextView = itemView.findViewById(R.id.websiteFromRoom)
         private val usernameTextView: TextView = itemView.findViewById(R.id.usernameFromRoom)
         private val noteTextView: TextView = itemView.findViewById(R.id.noteFromRoom)
+        private val progressBar: CircularProgressBar = itemView.findViewById(R.id.progressbar)
         private var totpJob: Job? = null
         private val totpGenerator: TOTPGenerator = TOTPGenerator()
         private var timer: Timer? = null
@@ -79,6 +79,7 @@ class LoginDataAdapter(
 
                 startTOTPTimer(loginData.totpKey)
             } else {
+                progressBar.visibility = View.GONE
                 websiteTextView.text = loginData.website?.let { getDomainFromUrl(it) }
                     ?.let { truncateString(it) }
                 usernameTextView.text = loginData.userName?.let { truncateString(it) }

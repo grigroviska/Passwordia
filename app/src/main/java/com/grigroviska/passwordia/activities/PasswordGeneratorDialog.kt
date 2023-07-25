@@ -4,11 +4,13 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputEditText
@@ -38,6 +40,9 @@ class PasswordGeneratorDialog : DialogFragment() {
             .setNegativeButton("Cancel") { _, _ ->
             }
             .create()
+
+        val backgroundDrawable = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.feedColor))
+        dialog.window?.setBackgroundDrawable(backgroundDrawable)
 
         output = mDialog.findViewById(R.id.passText)
         length = mDialog.findViewById(R.id.lengthBar)
