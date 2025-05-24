@@ -3,4 +3,5 @@
     <string name="valid_email_address">Please provide a valid email address.</string>
     <string name="we_couldn_t_find_this_account">We couldn\'t find this account.Please check the email address.</string>
     <string name="error_occurred_while_checking_email">Error occurred while checking email!</string>
+    <string name="please_select_your_entry">Please select your entry</string>
 </resources>

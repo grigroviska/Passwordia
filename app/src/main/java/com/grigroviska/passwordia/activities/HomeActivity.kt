@@ -47,6 +47,8 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
             WindowManager.LayoutParams.FLAG_SECURE
         )*/
 
+
+
         auth = FirebaseAuth.getInstance()
         searchView = binding.searchBox
         overlayView = binding.overlayView
@@ -61,18 +63,10 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
                     binding.dataList.adapter = adapter
                     binding.dataList.layoutManager = LinearLayoutManager(this)
                 } else {
-                    adapter?.setData(loginDataList)
+                    adapter?.setData(loginDataList) // Bu artık çalışacak
                 }
 
-                if (loginData.isEmpty()) {
-                    binding.dataList.visibility = View.GONE
-                    binding.homeImage.visibility = View.VISIBLE
-                    binding.noData.visibility = View.VISIBLE
-                } else {
-                    binding.dataList.visibility = View.VISIBLE
-                    binding.homeImage.visibility = View.GONE
-                    binding.noData.visibility = View.GONE
-                }
+                updateUIVisibility(loginData.isEmpty())
             }
         } catch (e: Exception) {
             Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
@@ -184,19 +178,16 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
             isItemNameMatch || isUserNameMatch || isWebsiteMatch || isAuthenticator
         }
 
-        adapter?.let {
-            it.setData(filteredList)
-            it.notifyDataSetChanged()
-        }
+        adapter?.setData(filteredList) // DiffUtil ile güncellenmiş verileri set eder
     }
 
 
     private fun onAddButtonClicked(){
 
-            setVisibility(clicked)
-            setAnimation(clicked)
+        setVisibility(clicked)
+        setAnimation(clicked)
 
-            clicked = !clicked
+        clicked = !clicked
 
     }
 
@@ -238,6 +229,17 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
             binding.loginText.visibility = View.INVISIBLE
             binding.authText.visibility = View.INVISIBLE
 
+        }
+    }
+    private fun updateUIVisibility(isEmpty: Boolean) {
+        if (isEmpty) {
+            binding.dataList.visibility = View.GONE
+            binding.homeImage.visibility = View.VISIBLE
+            binding.noData.visibility = View.VISIBLE
+        } else {
+            binding.dataList.visibility = View.VISIBLE
+            binding.homeImage.visibility = View.GONE
+            binding.noData.visibility = View.GONE
         }
     }
 }

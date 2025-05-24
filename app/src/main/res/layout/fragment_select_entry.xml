@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:paddingTop="35dp"  android:paddingBottom="20dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundColor"
@@ -10,7 +11,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Please select your entry"
+        android:text="@string/please_select_your_entry"
         android:textColor="@color/white"
         android:layout_marginTop="30dp"
         android:layout_marginStart="20dp"
@@ -37,12 +38,12 @@
             android:layout_height="200dp"
             android:textColor="@drawable/custom_radio_text"
             android:textSize="20sp"
-            android:text="Manuel Entry"/>
+            android:text="@string/manuel_entry"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="OR"
+            android:text="@string/or"
             android:layout_margin="40dp"
             android:layout_gravity="center"
             android:textColor="@color/white"
@@ -57,7 +58,7 @@
             android:layout_height="200dp"
             android:textSize="20sp"
             android:textColor="@drawable/custom_radio_text"
-            android:text="Biometric Entry"/>
+            android:text="@string/biometric_entry"/>
 
 
     </RadioGroup>
@@ -68,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:textColor="@color/white"
-        android:text="Continue"
+        android:text="@string/_continue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

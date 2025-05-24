@@ -23,7 +23,7 @@ abstract class loginDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     loginDatabase::class.java,
-                    "loginData_table"
+                    "passwordia_database"
                 )
                     .fallbackToDestructiveMigration()
                     .build()
@@ -33,6 +33,9 @@ abstract class loginDatabase : RoomDatabase() {
 
         }
 
+        fun resetInstance() {
+            INSTANCE = null
+        }
     }
 
 }

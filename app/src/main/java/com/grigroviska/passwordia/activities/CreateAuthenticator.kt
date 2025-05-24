@@ -3,11 +3,12 @@ package com.grigroviska.passwordia.activities
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -17,89 +18,68 @@ import com.grigroviska.passwordia.viewModel.LoginViewModel
 
 class CreateAuthenticator : AppCompatActivity() {
 
-    private lateinit var binding : ActivityCreateAuthenticatorBinding
-    private val CAMERA_PERMISSION_REQUEST_CODE = 200
+    private lateinit var binding: ActivityCreateAuthenticatorBinding
     private lateinit var loginViewModel: LoginViewModel
     private var loginData: LoginData? = null
+    private var loginId: Int = -1
+
+    companion object {
+        private const val CAMERA_PERMISSION_REQUEST_CODE = 200
+        private const val REQUEST_CODE_SCANNER = 100
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateAuthenticatorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        this.window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
 
-        loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
 
-        val loginId: Int = intent.getIntExtra("loginId", 999999)
+        // ID alınıyor
+        loginId = intent.getIntExtra("loginId", -1)
 
-        if (loginId != 999999) {
-            loginViewModel.allLogin.observe(this@CreateAuthenticator) { loginDataList ->
-                loginData = loginDataList.find { it.id == loginId }
-
-                loginData?.let {
-                    with(binding) {
-                        accountName.setText(it.accountName)
-                        secretKeyLayout.visibility = View.INVISIBLE
-                        secretKey.visibility = View.INVISIBLE
-
-                        createAuthData.setOnClickListener {
-                            val updateAccountName = accountName.text.toString().trim()
-
-                            if (updateAccountName.isNotEmpty()) {
-                                try {
-                                    val updatedAuthenticatorData = LoginData(
-                                        loginId,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        updateAccountName,
-                                        loginData!!.totpKey
-                                    )
-                                    loginViewModel.update(updatedAuthenticatorData)
-                                    finish()
-                                }catch (e: Exception){
-
-                                    Toast.makeText(this@CreateAuthenticator, e.localizedMessage, Toast.LENGTH_SHORT).show()
-
-                                }
-
-                            } else {
-                                Toast.makeText(this@CreateAuthenticator, "Please fill in the required fields!", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                } ?: Toast.makeText(this@CreateAuthenticator, "An error has occurred!", Toast.LENGTH_SHORT).show()
+        // Eğer loginId geçerliyse veriyi getir
+        if (loginId != -1) {
+            loginViewModel.getLoginById(loginId).observe(this) { login ->
+                login?.let {
+                    loginData = it
+                    fillUI(it)
+                } ?: run {
+                    Toast.makeText(this, "Kayıt bulunamadı.", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
             }
         }
 
+        // QR iconuna basıldığında
         binding.secretKeyLayout.setEndIconOnClickListener {
-
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 val intent = Intent(this, Scanner::class.java)
                 startActivityForResult(intent, REQUEST_CODE_SCANNER)
             } else {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
             }
-
         }
 
+        // Kayıt butonu
         binding.createAuthData.setOnClickListener {
-
-            saveLoginData()
-
+            if (loginData == null) {
+                saveLoginData()
+            } else {
+                updateLoginData()
+            }
         }
-
     }
 
-    companion object {
-        private const val REQUEST_CODE_SCANNER = 100
+    private fun fillUI(data: LoginData) {
+        binding.apply {
+            accountName.setText(data.accountName)
+            secretKeyLayout.visibility = View.INVISIBLE
+            secretKey.visibility = View.INVISIBLE
+        }
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -116,23 +96,34 @@ class CreateAuthenticator : AppCompatActivity() {
         val secretKey = binding.secretKey.text.toString().trim()
 
         if (accountName.isNotEmpty() && secretKey.isNotEmpty()) {
-            val loginData = LoginData(
-                loginData?.id ?: 0,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                accountName,
-                secretKey
+            val newLoginData = LoginData(
+                id = 0,
+                userName = null,
+                alternateUserName = null,
+                password = null,
+                website = null,
+                notes = null,
+                itemName = null,
+                category = null,
+                accountName = accountName,
+                totpKey = secretKey
             )
-
-            loginViewModel.insert(loginData)
+            loginViewModel.insert(newLoginData)
             finish()
         } else {
-            Toast.makeText(this, "Please fill in the required fields!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Lütfen gerekli alanları doldurun!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun updateLoginData() {
+        val accountName = binding.accountName.text.toString().trim()
+
+        if (accountName.isNotEmpty()) {
+            val updatedData = loginData!!.copy(accountName = accountName)
+            loginViewModel.update(updatedData)
+            finish()
+        } else {
+            Toast.makeText(this, "Lütfen hesap adını doldurun!", Toast.LENGTH_SHORT).show()
         }
     }
 }

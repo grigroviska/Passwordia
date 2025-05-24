@@ -3,7 +3,7 @@ package com.grigroviska.passwordia.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "loginData_table")
+@Entity(tableName = "passwordia_database")
 data class LoginData(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
