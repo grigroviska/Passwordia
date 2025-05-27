@@ -1,5 +1,6 @@
 package com.grigroviska.passwordia.activities
 
+import BackupDialog
 import com.grigroviska.passwordia.R
 import android.content.Context
 import android.content.Intent
@@ -13,6 +14,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProvider
 import com.grigroviska.passwordia.databinding.ActivitySettingsMenuBinding
 import com.grigroviska.passwordia.viewModel.LoginViewModel
+import androidx.core.net.toUri
 
 class SettingsMenu : AppCompatActivity() {
 
@@ -45,7 +47,7 @@ class SettingsMenu : AppCompatActivity() {
         binding.sendFeedbackLayout.setOnClickListener {
 
             val intent = Intent(Intent.ACTION_SENDTO)
-            intent.data = Uri.parse("mailto:")
+            intent.data = "mailto:".toUri()
             intent.putExtra(Intent.EXTRA_EMAIL, arrayOf("alperkaragozoglu3@gmail.com"))
             intent.putExtra(Intent.EXTRA_SUBJECT, "Crash Or Suggest")
             startActivity(intent)
@@ -65,8 +67,8 @@ class SettingsMenu : AppCompatActivity() {
     }
 
     private fun showBackupDialog() {
-        //val dialog = BackupDialog()
-        //dialog.show(supportFragmentManager, "password_generator_dialog")
+        val dialog = BackupDialog()
+        dialog.show(supportFragmentManager, "password_generator_dialog")
     }
 
 

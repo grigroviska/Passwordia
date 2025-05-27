@@ -93,5 +93,5 @@ dependencies {
     implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
 
     implementation 'commons-codec:commons-codec:1.15'
-
+    implementation 'com.google.code.gson:gson:2.12.1'
 }
