@@ -1,12 +1,12 @@
 package com.grigroviska.passwordia.adapter
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +30,10 @@ import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import de.hdodenhof.circleimageview.CircleImageView
 import java.net.MalformedURLException
 import java.net.URL
+import androidx.core.net.toUri
+import android.graphics.drawable.BitmapDrawable
+import coil.load
+import androidx.core.graphics.drawable.toDrawable
 
 class LoginDataAdapter(
     private var loginDataList: List<LoginData>
@@ -56,32 +60,23 @@ class LoginDataAdapter(
         private val progressBar: CircularProgressBar = itemView.findViewById(R.id.progressbar)
         private val profileImage: CircleImageView = itemView.findViewById(R.id.profileImageView)
 
-        // TotpTimerManager'ı burada başlattık
         private val totpTimerManager = TotpTimerManager(
             onTotpCodeGenerated = { code ->
-                // Yeni bir TOTP kodu üretildiğinde bu kod çalışır.
-                // usernameTextView'ı güncelleyerek kodu gösteririz.
                 usernameTextView.text = code
             },
             onTimerTick = { progress ->
-                // İlerleme çubuğu güncellendiğinde bu kod çalışır.
-                // progressBar'ın ilerlemesini ayarlarız.
                 progressBar.progress = progress
-                progressBar.visibility = View.VISIBLE // İlerleme çubuğunu görünür yap
+                progressBar.visibility = View.VISIBLE
             },
             onTimerFinished = {
-                // 30 saniyelik döngü tamamlandığında bu kod çalışır.
-                // İsterseniz burada ek işlemler yapabilirsiniz, örneğin bir sonraki kodu hemen göstermek gibi.
-                // TotpTimerManager zaten otomatik olarak bir sonraki döngüyü başlatacaktır.
+
             }
         )
 
         fun bind(loginData: LoginData) {
-            // Eğer accountName boş değilse, bu bir Authenticator (TOTP) kaydıdır.
             if (!loginData.accountName.isNullOrEmpty()) {
                 setupAccountView(loginData)
             } else {
-                // Değilse, genel bir giriş verisi kaydıdır.
                 setupGeneralView(loginData)
             }
 
@@ -92,39 +87,35 @@ class LoginDataAdapter(
             itemView.setOnClickListener {
                 val context = itemView.context
                 val intent = if (!loginData.accountName.isNullOrEmpty()) {
-                    Intent(context, CreateAuthenticator::class.java) // Authenticator düzenleme ekranı
+                    Intent(context, CreateAuthenticator::class.java)
                 } else {
-                    Intent(context, CreateLoginData::class.java) // Giriş verisi düzenleme ekranı
+                    Intent(context, CreateLoginData::class.java)
                 }
-                intent.putExtra("loginId", loginData.id) // ID'yi intent'e ekle
+                intent.putExtra("loginId", loginData.id)
                 context.startActivity(intent)
             }
 
             itemView.findViewById<ImageView>(R.id.copyPassword).setOnClickListener {
-                copyToClipboard(loginData) // Şifreyi/TOTP'yi kopyala
+                copyToClipboard(loginData)
             }
         }
 
-        // Authenticator (TOTP) kayıtları için görünüm ayarları
         private fun setupAccountView(loginData: LoginData) {
-            websiteTextView.text = loginData.accountName // Hesap adını göster
-            val accountInitials = loginData.accountName!!.first().uppercase() // Baş harfini al
+            websiteTextView.text = loginData.accountName
+            val accountInitials = loginData.accountName!!.first().uppercase()
             profileImage.setImageBitmap(
                 BitmapUtils.generateInitialsBitmap(itemView.context, accountInitials, 24f, 60)
             )
 
             loginData.totpKey?.let {
-                // TOTP anahtarı varsa, sayacı başlat
                 totpTimerManager.startTotpTimer(it)
             } ?: run {
-                // TOTP anahtarı yoksa, sayacı durdur ve ilgili UI öğelerini temizle
                 totpTimerManager.stopTotpTimer()
                 progressBar.visibility = View.GONE
-                usernameTextView.text = "" // TOTP kodu yerine boş bırak
+                usernameTextView.text = ""
             }
         }
 
-        // Genel giriş verisi kayıtları için görünüm ayarları
         private fun setupGeneralView(loginData: LoginData) {
             totpTimerManager.stopTotpTimer() // Bu bir TOTP kaydı olmadığı için sayacı durdur
             progressBar.visibility = View.GONE // İlerleme çubuğunu gizle
@@ -143,14 +134,11 @@ class LoginDataAdapter(
             }
         }
 
-        // Şifreyi/TOTP kodunu panoya kopyalama
         private fun copyToClipboard(loginData: LoginData) {
             val clipboard = itemView.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = if (loginData.accountName == null) {
-                // Eğer accountName boşsa şifreyi kopyala
                 ClipData.newPlainText("password", loginData.password)
             } else {
-                // Aksi halde TOTP kodunu kopyala
                 ClipData.newPlainText("username", usernameTextView.text)
             }
             clipboard.setPrimaryClip(clip)
@@ -158,36 +146,32 @@ class LoginDataAdapter(
             Toast.makeText(itemView.context, message, Toast.LENGTH_SHORT).show()
         }
 
-        // URL'den alan adını alma
         private fun getDomainFromUrl(url: String): String {
             return try {
                 val uri = URL(url)
-                val domain = uri.host.removePrefix("www.") // "www." kısmını kaldır
-                "${uri.protocol}://$domain" // Protokol ile birlikte alanı döndür
+                val domain = uri.host.removePrefix("www.")
+                "${uri.protocol}://$domain"
             } catch (e: MalformedURLException) {
-                url // Hata olursa orijinal URL'yi döndür
+                url
             }
         }
 
-        // Metni kısaltma (belirli bir karakterden sonra "...")
         private fun truncateString(text: String): String {
             return if (text.length > 20) text.take(20) + "..." else text
         }
 
-        // Web sitesini tarayıcıda açma
         private fun openWebsite(url: String, context: Context) {
             try {
                 val validUrl = if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                    "http://$url" // Eğer protokol yoksa "http://" ekle
+                    "http://$url"
                 } else url
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(validUrl))
+                val intent = Intent(Intent.ACTION_VIEW, validUrl.toUri())
                 context.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
                 Toast.makeText(context, "Web sitesi açılamadı", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Bottom Sheet iletişim kutusunu gösterme
         private fun showBottomSheetDialog(loginData: LoginData, context: Context) {
             val dialog = BottomSheetDialog(context)
             val view = LayoutInflater.from(context).inflate(R.layout.options_bottom_sheet, null)
@@ -200,7 +184,6 @@ class LoginDataAdapter(
             val openWebsite = view.findViewById<LinearLayout>(R.id.openWebsiteLayout)
             val delete = view.findViewById<LinearLayout>(R.id.deleteLayout)
 
-            // Eğer bir Authenticator kaydıysa (accountName doluysa) bazı seçenekleri gizle
             if (!loginData.accountName.isNullOrEmpty()) {
                 websiteName.text = loginData.accountName
                 copyEmail.visibility = View.GONE
@@ -211,7 +194,6 @@ class LoginDataAdapter(
                 websiteName.text = loginData.website
             }
 
-            // Kopyalama butonları
             copyEmail.setOnClickListener {
                 copyTextToClipboard(context, "email", loginData.userName ?: "")
                 Toast.makeText(context, context.getString(R.string.email_copied), Toast.LENGTH_SHORT).show()
@@ -230,13 +212,11 @@ class LoginDataAdapter(
                 dialog.dismiss()
             }
 
-            // Web sitesini açma
             openWebsite.setOnClickListener {
                 loginData.website?.let { openWebsite(it, context) }
                 dialog.dismiss()
             }
 
-            // Silme işlemi
             delete.setOnClickListener {
                 val viewModel = ViewModelProvider(context as ViewModelStoreOwner)[LoginViewModel::class.java]
                 AlertDialog.Builder(context)
@@ -257,7 +237,6 @@ class LoginDataAdapter(
             dialog.show()
         }
 
-        // Metni panoya kopyalama yardımcı fonksiyonu
         private fun copyTextToClipboard(context: Context, label: String, text: String) {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText(label, text)
@@ -269,7 +248,7 @@ class LoginDataAdapter(
         val diffCallback = LoginDataDiffCallback(this.loginDataList, newLoginDataList)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
-        this.loginDataList = newLoginDataList // Eski listeyi yeni liste ile değiştir
-        diffResult.dispatchUpdatesTo(this) // Sadece değişen öğeleri RecyclerView'a bildir
+        this.loginDataList = newLoginDataList
+        diffResult.dispatchUpdatesTo(this)
     }
 }

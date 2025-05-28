@@ -5,7 +5,6 @@ import com.grigroviska.passwordia.R
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -15,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.grigroviska.passwordia.databinding.ActivitySettingsMenuBinding
 import com.grigroviska.passwordia.viewModel.LoginViewModel
 import androidx.core.net.toUri
+import androidx.core.content.edit
 
 class SettingsMenu : AppCompatActivity() {
 
@@ -73,9 +73,9 @@ class SettingsMenu : AppCompatActivity() {
 
 
     private fun saveEntryType(entryType: String) {
-        val editor = sharedPreferences.edit()
-        editor.putString("entry_type", entryType)
-        editor.apply()
+        sharedPreferences.edit {
+            putString("entry_type", entryType)
+        }
     }
 
     private fun showSignOutConfirmationDialog() {
@@ -92,20 +92,22 @@ class SettingsMenu : AppCompatActivity() {
     }
 
     private fun performSignOutAndClearData() {
+
+        sharedPreferences.edit {
+            clear()
+        }
+
         viewModel.signOutAndClearData(
             onSuccess = {
-
-                // Çıkış yapıldıktan sonra MainActivity'ye yönlendir
                 val intent = Intent(this, SignMain::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
             },
             onFailure = { exception ->
-                Toast.makeText(this, ": ${exception.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Sign out failed: ${exception.message}", Toast.LENGTH_LONG).show()
             }
         )
     }
-
 
 }

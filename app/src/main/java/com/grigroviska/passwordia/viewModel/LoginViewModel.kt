@@ -116,4 +116,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    val allCategories: LiveData<List<String>> = loginDao.getAllCategories()
+
 }

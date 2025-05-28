@@ -18,38 +18,38 @@
         android:layout_marginEnd="10dp"
         >
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="10dp">
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profileImageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:civ_border_width="2dp"
-            app:civ_border_color="@color/firstColor"
-            app:civ_circle_background_color="@color/firstColor"
-            app:civ_text_size="20sp"
-            app:civ_text_color="@color/white"
-            app:civ_text=""
-            app:civ_text_mode="initials" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profileImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:civ_border_width="2dp"
+                app:civ_border_color="@color/firstColor"
+                app:civ_circle_background_color="@color/firstColor"
+                app:civ_text_size="20sp"
+                app:civ_text_color="@color/white"
+                app:civ_text=""
+                app:civ_text_mode="initials" />
 
-        <com.mikhaellopez.circularprogressbar.CircularProgressBar
-            android:id="@+id/progressbar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cpb_progress="0"
-            app:cpb_progress_max="30"
-            android:visibility="gone"
-            app:cpb_progressbar_color="@color/helpColor"
-            app:cpb_background_progressbar_color="@color/progressBarColor"
-            app:cpb_progressbar_width="6dp"
-            app:cpb_background_progressbar_width="6dp" />
+            <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                android:id="@+id/progressbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cpb_progress="0"
+                app:cpb_progress_max="30"
+                android:visibility="gone"
+                app:cpb_progressbar_color="@color/helpColor"
+                app:cpb_background_progressbar_color="@color/progressBarColor"
+                app:cpb_progressbar_width="6dp"
+                app:cpb_background_progressbar_width="6dp" />
 
-    </FrameLayout>
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/informationSection"

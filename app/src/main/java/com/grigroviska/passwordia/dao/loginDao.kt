@@ -33,4 +33,7 @@ interface loginDao {
     @Query("SELECT * FROM passwordia_database WHERE id = :id")
     fun getLoginById(id: Int): LiveData<LoginData>
 
+    @Query("SELECT DISTINCT category FROM passwordia_database WHERE category IS NOT NULL AND category != ''")
+    fun getAllCategories(): LiveData<List<String>>
+
 }

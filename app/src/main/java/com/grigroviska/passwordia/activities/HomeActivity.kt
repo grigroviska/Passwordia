@@ -1,6 +1,7 @@
 package com.grigroviska.passwordia.activities
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -9,10 +10,12 @@ import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.chip.Chip
 import com.google.firebase.auth.FirebaseAuth
 import com.grigroviska.passwordia.R
 import com.grigroviska.passwordia.adapter.LoginDataAdapter
@@ -63,13 +66,99 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
                     binding.dataList.adapter = adapter
                     binding.dataList.layoutManager = LinearLayoutManager(this)
                 } else {
-                    adapter?.setData(loginDataList) // Bu artık çalışacak
+                    adapter?.setData(loginDataList)
                 }
 
                 updateUIVisibility(loginData.isEmpty())
             }
         } catch (e: Exception) {
             Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
+        }
+
+
+        val chipGroup = binding.filterChipGroup
+
+
+        val selectedColor = ContextCompat.getColor(this, R.color.backgroundDarkColor)
+        val unselectedColor = ContextCompat.getColor(this, R.color.progressBarColor)
+        val textColor = ContextCompat.getColor(this, R.color.white) // Metin rengi
+
+        // Chip durumları için ColorStateList oluştur
+        val chipColorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked), // Seçili durum
+                intArrayOf(-android.R.attr.state_checked) // Seçili olmayan durum (varsayılan)
+            ),
+            intArrayOf(
+                selectedColor,  // Seçili durum için renk
+                unselectedColor // Seçili olmayan durum için renk
+            )
+        )
+
+        viewModel.allCategories.observe(this) { categories ->
+            chipGroup.setOnCheckedChangeListener(null) // Listener'ı geçici olarak kaldır
+            chipGroup.removeAllViews()
+
+            // "All" (Tümü) Chip'i
+            val allChip = Chip(this).apply {
+                text = "All" // Veya "Tümü" olarak yerelleştirin
+                isCheckable = true
+                isChecked = chipGroup.checkedChipId == View.NO_ID // Başlangıçta sadece biri seçili olmalı
+                chipBackgroundColor = chipColorStateList // ColorStateList'i ata
+                setTextColor(textColor)
+                // ID atamak, checkedChipId'nin doğru çalışması için önemlidir
+                this.id = View.generateViewId()
+                if (isChecked) { // Başlangıçta "All" seçili ise
+                    chipGroup.check(this.id)
+                }
+            }
+            chipGroup.addView(allChip)
+
+            // Diğer kategori Chip'leri
+            categories.forEach { category ->
+                val chip = Chip(this).apply {
+                    text = category
+                    isCheckable = true
+                    isChecked = false // Başlangıçta diğerleri seçili değil
+                    chipBackgroundColor = chipColorStateList // ColorStateList'i ata
+                    setTextColor(textColor)
+                    this.id = View.generateViewId() // Her chip için benzersiz ID
+                }
+                chipGroup.addView(chip)
+            }
+
+            // Başlangıçta "All" chip'inin seçili olmasını sağla (eğer henüz bir şey seçilmemişse)
+            if (chipGroup.checkedChipId == View.NO_ID && chipGroup.childCount > 0) {
+                (chipGroup.getChildAt(0) as? Chip)?.let {
+                    it.isChecked = true
+                }
+            }
+
+
+            chipGroup.setOnCheckedChangeListener { group, checkedId ->
+                // Her chip'in rengi ColorStateList sayesinde otomatik güncellenecektir.
+                // Bu listener sadece filtreleme mantığı için kalmalı.
+
+                if (checkedId == View.NO_ID) { // Hiçbir chip seçili değilse (singleSelection false ise olabilir)
+                    adapter?.setData(loginDataList) // Tümünü göster
+                    // İsteğe bağlı: "All" chip'ini tekrar seçili yap
+                    (group.getChildAt(0) as? Chip)?.isChecked = true
+                    return@setOnCheckedChangeListener
+                }
+
+                val checkedChip = group.findViewById<Chip>(checkedId)
+                val selectedCategory = checkedChip?.text?.toString()
+
+                if (selectedCategory == "All" || selectedCategory == "Tümü") {
+                    adapter?.setData(loginDataList)
+                } else if (selectedCategory != null) {
+                    val filteredList = loginDataList.filter { it.category == selectedCategory }
+                    adapter?.setData(filteredList)
+                } else {
+                    // checkedId geçerli bir chip'e işaret etmiyorsa (teorik olarak olmamalı)
+                    adapter?.setData(loginDataList)
+                }
+            }
         }
 
         binding.fab.setOnClickListener {

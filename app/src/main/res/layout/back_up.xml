@@ -7,16 +7,16 @@
     android:background="@color/backgroundColor">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="320dp"
+        android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_gravity="center">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/backupPassword"
-            android:layout_width="320dp"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:hint="Enter Password" />
+            android:hint="@string/enter_password" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_gravity="center"
-        android:text="Export Backup"/>
+        android:text="@string/export_backup"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/importButton"
@@ -35,6 +35,6 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:layout_gravity="center"
-        android:text="Import Backup"/>
+        android:text="@string/import_backup"/>
 
 </LinearLayout>
