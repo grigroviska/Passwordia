@@ -94,5 +94,12 @@
     <string name="enter_password">Enter Password</string>
     <string name="export_backup">Export Backup</string>
     <string name="import_backup">Import Backup</string>
-    <string name="note_prefix">note_prefix\n</string>
+    <string name="hide_tag">Hide Tag</string>
+    <string name="enter_texts_to_hide">Enter Texts to Hide</string>
+    <string name="enter_the_tags_to_hide_separated_by_commas">Enter the tags to hide, separated by commas:</string>
+    <string name="e_g_private_important_confidential">e.g.: private, important, confidential</string>
+    <string name="save">Save</string>
+    <string name="hidden_tag">"Hidden Tags: "</string>
+    <string name="label_all">All</string>
+    <string name="no_data">You do not have a login or an authenticator record yet, please add from the button below.</string>
 </resources>
