@@ -31,4 +31,9 @@ class loginRepo(private val loginDao : loginDao){
         return loginDao.getLoginById(id)
     }
 
+    suspend fun updateFavoriteStatus(loginData: LoginData) {
+        loginDao.updateFavoriteStatus(loginData.id, loginData.isFavorite)
+    }
+
+
 }

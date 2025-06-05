@@ -27,6 +27,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         val dao = loginDatabase.getDatabase(application).loginDao()
         repo = loginRepo(dao)
         allLogin = repo.allLogin
+
     }
 
     fun insert(loginData: LoginData) = viewModelScope.launch(Dispatchers.IO) {
@@ -83,6 +84,12 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updateFavoriteStatus(loginData: LoginData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.updateFavoriteStatus(loginData)
+        }
+    }
+
     /**
      * Room veritabanı ile ilişkili tüm dosyaları siler.
      * @param context Application Context.
@@ -117,5 +124,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     val allCategories: LiveData<List<String>> = loginDao.getAllCategories()
+
+
 
 }

@@ -31,12 +31,10 @@ import de.hdodenhof.circleimageview.CircleImageView
 import java.net.MalformedURLException
 import java.net.URL
 import androidx.core.net.toUri
-import android.graphics.drawable.BitmapDrawable
-import coil.load
-import androidx.core.graphics.drawable.toDrawable
 
 class LoginDataAdapter(
-    private var loginDataList: List<LoginData>
+    private var loginDataList: List<LoginData>,
+    private val onFavoriteClick: (LoginData) -> Unit
 ) : RecyclerView.Adapter<LoginDataAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -59,6 +57,7 @@ class LoginDataAdapter(
         private val noteTextView: TextView = itemView.findViewById(R.id.noteFromRoom)
         private val progressBar: CircularProgressBar = itemView.findViewById(R.id.progressbar)
         private val profileImage: CircleImageView = itemView.findViewById(R.id.profileImageView)
+        private val favoriteIcon: ImageView = itemView.findViewById(R.id.favoriteIcon)
 
         private val totpTimerManager = TotpTimerManager(
             onTotpCodeGenerated = { code ->
@@ -98,6 +97,20 @@ class LoginDataAdapter(
             itemView.findViewById<ImageView>(R.id.copyPassword).setOnClickListener {
                 copyToClipboard(loginData)
             }
+
+            favoriteIcon.setOnClickListener {
+                loginData.isFavorite = !loginData.isFavorite
+                updateFavoriteIcon(loginData.isFavorite)
+                onFavoriteClick.invoke(loginData)
+            }
+        }
+
+        private fun updateFavoriteIcon(isFavorite: Boolean) {
+            if (isFavorite) {
+                favoriteIcon.setImageResource(R.drawable.favorited)
+            } else {
+                favoriteIcon.setImageResource(R.drawable.favorite)
+            }
         }
 
         private fun setupAccountView(loginData: LoginData) {
@@ -117,12 +130,12 @@ class LoginDataAdapter(
         }
 
         private fun setupGeneralView(loginData: LoginData) {
-            totpTimerManager.stopTotpTimer() // Bu bir TOTP kaydı olmadığı için sayacı durdur
-            progressBar.visibility = View.GONE // İlerleme çubuğunu gizle
-            usernameTextView.text = loginData.userName?.let { truncateString(it) } // Kullanıcı adını göster
+            totpTimerManager.stopTotpTimer()
+            progressBar.visibility = View.GONE
+            usernameTextView.text = loginData.userName?.let { truncateString(it) }
 
             websiteTextView.text = loginData.website?.let { getDomainFromUrl(it) }?.let { truncateString(it) } // Web sitesi adını göster
-            val initials = loginData.website?.first()?.uppercase() ?: "?" // Web sitesi baş harfini al
+            val initials = loginData.website?.first()?.uppercase() ?: "?"
             profileImage.setImageBitmap(
                 BitmapUtils.generateInitialsBitmap(itemView.context, initials, 24f, 60)
             )
@@ -172,6 +185,7 @@ class LoginDataAdapter(
             }
         }
 
+        @SuppressLint("MissingInflatedId")
         private fun showBottomSheetDialog(loginData: LoginData, context: Context) {
             val dialog = BottomSheetDialog(context)
             val view = LayoutInflater.from(context).inflate(R.layout.options_bottom_sheet, null)
@@ -183,6 +197,13 @@ class LoginDataAdapter(
             val copyPassword = view.findViewById<LinearLayout>(R.id.copyPasswordLayout)
             val openWebsite = view.findViewById<LinearLayout>(R.id.openWebsiteLayout)
             val delete = view.findViewById<LinearLayout>(R.id.deleteLayout)
+            val favoriteToggle = view.findViewById<TextView>(R.id.favoriteText)
+
+            if (loginData.isFavorite) {
+                favoriteToggle.text = context.getString(R.string.remove_from_favorites)
+            } else {
+                favoriteToggle.text = context.getString(R.string.add_to_favorites)
+            }
 
             if (!loginData.accountName.isNullOrEmpty()) {
                 websiteName.text = loginData.accountName
@@ -214,6 +235,13 @@ class LoginDataAdapter(
 
             openWebsite.setOnClickListener {
                 loginData.website?.let { openWebsite(it, context) }
+                dialog.dismiss()
+            }
+
+            favoriteToggle.setOnClickListener {
+                loginData.isFavorite = !loginData.isFavorite
+                updateFavoriteIcon(loginData.isFavorite)
+                onFavoriteClick.invoke(loginData)
                 dialog.dismiss()
             }
 

@@ -16,4 +16,5 @@ data class LoginData(
     val category: String? = null,
     val accountName: String? = null,
     val totpKey: String? = null,
+    var isFavorite: Boolean = false
 )

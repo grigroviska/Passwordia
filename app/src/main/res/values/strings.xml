@@ -102,4 +102,6 @@
     <string name="hidden_tag">"Hidden Tags: "</string>
     <string name="label_all">All</string>
     <string name="no_data">You do not have a login or an authenticator record yet, please add from the button below.</string>
+    <string name="remove_from_favorites">Remove From Favorite</string>
+    <string name="add_to_favorites">Favorite</string>
 </resources>

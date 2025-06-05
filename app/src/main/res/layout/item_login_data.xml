@@ -67,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/website"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 
@@ -89,7 +89,16 @@
 
         </LinearLayout>
 
-    <ImageView
+        <ImageView
+            android:id="@+id/favoriteIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/copyPassword"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/favorite" />
+
+        <ImageView
         android:id="@+id/options"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -97,14 +106,14 @@
         android:layout_centerVertical="true"
         android:src="@drawable/options_icon" />
 
-    <ImageView
-        android:id="@+id/copyPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
-        android:layout_toStartOf="@id/options"
-        android:layout_centerVertical="true"
-        android:src="@drawable/copy_icon" />
+        <ImageView
+            android:id="@+id/copyPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_toStartOf="@id/options"
+            android:layout_centerVertical="true"
+            android:src="@drawable/copy_icon" />
 
     </RelativeLayout>
 

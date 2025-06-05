@@ -1,6 +1,5 @@
 package com.grigroviska.passwordia.activities
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
@@ -38,6 +37,7 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
     private lateinit var prefs: SharedPreferences
     private var hiddenTags: Set<String> = emptySet()
     private var isHideTagFeatureEnabled: Boolean = false
+    private lateinit var loginDataAdapter: LoginDataAdapter
 
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim) }
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim) }
@@ -70,7 +70,7 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
         searchView = binding.searchBox
         overlayView = binding.overlayView
 
-        prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        prefs = getSharedPreferences("settings", MODE_PRIVATE)
         loadHiddenTagSettings()
 
         setupViewModel()
@@ -81,40 +81,48 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
     private fun setupViewModel() {
         try {
             viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+            loginDataAdapter = LoginDataAdapter(emptyList()) { loginData ->
+                viewModel.updateFavoriteStatus(loginData)
+            }
             viewModel.allLogin.observe(this) { loginData ->
                 originalLoginDataList = loginData
-                applyFilters()
+                val currentCategories = viewModel.allCategories.value ?: emptyList()
+                repopulateChipGroup(currentCategories)
             }
         } catch (e: Exception) {
-            Toast.makeText(this, "ViewModel Hatası: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
-            Log.e("HomeActivity_VM", "ViewModel Başlatma Hatası", e)
-        }
+            Toast.makeText(this, "ViewModel Hatası: ${e.localizedMessage}", Toast.LENGTH_LONG).show() }
     }
 
     private fun setupChipGroupObserver() {
         viewModel.allCategories.observe(this) { categories ->
-            Log.d("HomeActivity_Chip", "Kategoriler alındı: $categories")
             repopulateChipGroup(categories)
         }
     }
 
     private fun repopulateChipGroup(categories: List<String>) {
-        Log.d("HomeActivity_Chip", "ChipGroup yeniden dolduruluyor. Mevcut kategoriler: $categories")
         val chipGroup = binding.filterChipGroup
         chipGroup.setOnCheckedChangeListener(null)
-        chipGroup.isSingleSelection = true // BURADA EKLENDİ: Tekli seçim modunu etkinleştir
+        chipGroup.isSingleSelection = true
 
         val previouslyCheckedChipId = chipGroup.checkedChipId
         var previouslyCheckedChipText: String? = null
         if (previouslyCheckedChipId != View.NO_ID) {
             previouslyCheckedChipText = chipGroup.findViewById<Chip>(previouslyCheckedChipId)?.text?.toString()
         }
-        if (previouslyCheckedChipText == null && chipGroup.childCount > 0) {
-            previouslyCheckedChipText = allCategoriesChipText
-        }
-        Log.d("HomeActivity_Chip", "Önceden seçili chip metni: $previouslyCheckedChipText")
 
         chipGroup.removeAllViews()
+
+        if (originalLoginDataList.isEmpty()) {
+            chipGroup.visibility = View.GONE
+            applyFilters()
+            return
+        } else {
+            chipGroup.visibility = View.VISIBLE
+        }
+
+        if (previouslyCheckedChipText == null && chipGroup.childCount == 0 && originalLoginDataList.isNotEmpty()) {
+            previouslyCheckedChipText = allCategoriesChipText
+        }
 
         val lowerHiddenTagsForChipPopulation = if (isHideTagFeatureEnabled) {
             hiddenTags
@@ -124,12 +132,9 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
         val allChip = createChip(allCategoriesChipText)
         chipGroup.addView(allChip)
-        Log.d("HomeActivity_Chip", "'Tümü' chip'i eklendi.")
-
         val visibleCategories = categories.filter { category ->
             !isHideTagFeatureEnabled || !lowerHiddenTagsForChipPopulation.contains(category.lowercase())
         }
-        Log.d("HomeActivity_Chip", "Chipler için görünür kategoriler: $visibleCategories")
 
         visibleCategories.forEach { category ->
             chipGroup.addView(createChip(category))
@@ -142,7 +147,6 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
                 if (chip?.text.toString().equals(previouslyCheckedChipText, ignoreCase = true)) {
                     chip?.isChecked = true
                     foundAndCheckedPrevious = true
-                    Log.d("HomeActivity_Chip", "Önceki seçim geri yüklendi: ${chip?.text}")
                     break
                 }
             }
@@ -150,13 +154,10 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
         if (!foundAndCheckedPrevious && chipGroup.childCount > 0) {
             (chipGroup.getChildAt(0) as? Chip)?.isChecked = true
-            Log.d("HomeActivity_Chip", "Önceki seçim bulunamadı veya geri yüklenmedi, ilk chip seçiliyor: ${(chipGroup.getChildAt(0) as? Chip)?.text}")
-        } else if (chipGroup.childCount == 0) {
-            Log.w("HomeActivity_Chip", "ChipGroup beklenmedik şekilde boş.")
+        } else if (chipGroup.childCount == 0 && originalLoginDataList.isNotEmpty()) {
         }
 
         chipGroup.setOnCheckedChangeListener { group, checkedId ->
-            Log.d("HomeActivity_Chip", "ChipGroup onCheckedChange dinleyicisi tetiklendi. CheckedId: $checkedId")
             applyFilters()
         }
         applyFilters()
@@ -197,23 +198,18 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                Log.d("HomeActivity_Search", "onQueryTextSubmit: $query")
                 applyFilters()
                 searchView.clearFocus()
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                Log.d("HomeActivity_Search", "onQueryTextChange - newText: $newText, isNullOrEmpty: ${newText.isNullOrEmpty()}")
                 if (!newText.isNullOrEmpty()) {
-                    Log.d("HomeActivity_Search", "Metin girişi nedeniyle ChipGroup gizleniyor.")
                     binding.filterChipGroup.visibility = View.GONE
                 } else {
                     if (!searchView.hasFocus()) {
-                        Log.d("HomeActivity_Search", "Metin boş ve arama kutusu odaklı değil, ChipGroup gösteriliyor.")
                         binding.filterChipGroup.visibility = View.VISIBLE
                     } else {
-                        Log.d("HomeActivity_Search", "Metin boş ama arama kutusu odaklı, ChipGroup görünürlüğü şimdilik değişmiyor.")
                     }
                 }
                 applyFilters()
@@ -224,14 +220,11 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             Log.d("HomeActivity_Search", "onFocusChange - hasFocus: $hasFocus, query: '${searchView.query}'")
             if (hasFocus) {
-                Log.d("HomeActivity_Search", "Odaklandı, ChipGroup gizleniyor ve overlay gösteriliyor.")
                 binding.filterChipGroup.visibility = View.GONE
                 overlayView.visibility = View.VISIBLE
             } else {
-                Log.d("HomeActivity_Search", "Odak kaybedildi.")
                 overlayView.visibility = View.GONE
                 if (searchView.query.isNullOrEmpty()) {
-                    Log.d("HomeActivity_Search", "Sorgu boş, ChipGroup gösteriliyor.")
                     binding.filterChipGroup.visibility = View.VISIBLE
                 }
                 applyFilters()
@@ -239,12 +232,10 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
         }
 
         searchView.setOnCloseListener {
-            Log.d("HomeActivity_Search", "SearchView onClose tetiklendi.")
             false
         }
 
         overlayView.setOnClickListener {
-            Log.d("HomeActivity_Overlay", "Overlay tıklandı.")
             if (clicked) {
                 onAddButtonClicked()
             }
@@ -295,19 +286,16 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
 
     override fun onResume() {
         super.onResume()
-        Log.d("HomeActivity_Lifecycle", "onResume çağrıldı.")
         val oldHiddenTags = hiddenTags.toSet()
         val oldIsHideTagFeatureEnabled = isHideTagFeatureEnabled
 
         loadHiddenTagSettings()
 
         if (oldHiddenTags != hiddenTags || oldIsHideTagFeatureEnabled != isHideTagFeatureEnabled) {
-            Log.d("HomeActivity_Lifecycle", "Ayarlar değişti, chipler yeniden dolduruluyor.")
             viewModel.allCategories.value?.let { currentCategories ->
                 repopulateChipGroup(currentCategories)
             } ?: applyFilters()
         } else {
-            Log.d("HomeActivity_Lifecycle", "Ayarlar değişmedi, filtreler uygulanıyor.")
             applyFilters()
         }
 
@@ -315,7 +303,6 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
             closeFabMenu()
         }
         if (!searchView.hasFocus() && searchView.query.isNullOrEmpty()) {
-            Log.d("HomeActivity_Lifecycle", "onResume: SearchView odaklı değil ve sorgu boş, ChipGroup görünür yapılıyor.")
             binding.filterChipGroup.visibility = View.VISIBLE
         }
     }
@@ -323,16 +310,13 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
     private fun loadHiddenTagSettings() {
         isHideTagFeatureEnabled = prefs.getBoolean("hide_tag_enabled", false)
         hiddenTags = prefs.getStringSet("hidden_tags", emptySet())?.map { it.lowercase() }?.toSet() ?: emptySet()
-        Log.d("HomeActivity_Settings", "Ayarlar yüklendi - HideFeatureEnabled: $isHideTagFeatureEnabled, HiddenTags: $hiddenTags")
     }
 
     private fun applyFilters() {
-        Log.d("HomeActivity_Filter", "applyFilters çağrıldı. ChipGroup görünürlüğü: ${binding.filterChipGroup.visibility}, Görünür mü: ${binding.filterChipGroup.visibility == View.VISIBLE}")
         var filteredList = originalLoginDataList
         val isChipGroupVisible = binding.filterChipGroup.visibility == View.VISIBLE
 
         if (isHideTagFeatureEnabled && hiddenTags.isNotEmpty()) {
-            Log.d("HomeActivity_Filter", "Gizli etiket filtresi uygulanıyor. Gizli etiketler: $hiddenTags")
             filteredList = filteredList.filter { loginData ->
                 val itemTags = loginData.category?.split(",")
                     ?.map { it.trim().lowercase() }
@@ -347,32 +331,25 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
         if (isChipGroupVisible) {
             val chipGroup = binding.filterChipGroup
             val checkedChipId = chipGroup.checkedChipId
-            Log.d("HomeActivity_Filter", "ChipGroup görünür. CheckedChipId: $checkedChipId")
 
             if (checkedChipId != View.NO_ID && checkedChipId != -1) {
                 val checkedChip = chipGroup.findViewById<Chip>(checkedChipId)
                 if (checkedChip != null) {
                     val selectedChipText = checkedChip.text?.toString()
-                    Log.d("HomeActivity_Filter", "Seçili chip metni: $selectedChipText")
 
                     if (selectedChipText != null && !selectedChipText.equals(allCategoriesChipText, ignoreCase = true)) {
                         if (!isHideTagFeatureEnabled || !hiddenTags.contains(selectedChipText.lowercase())) {
                             categoryToFilterBy = selectedChipText
-                            Log.d("HomeActivity_Filter", "Kategoriye göre filtreleniyor: $categoryToFilterBy")
                         } else {
-                            Log.w("HomeActivity_Filter", "Gizli bir etiket ($selectedChipText) filtre olarak kullanılmaya çalışıldı. 'Tümü'ne dönülüyor.")
                             if (chipGroup.childCount > 0 && chipGroup.getChildAt(0).id != checkedChipId) {
                                 (chipGroup.getChildAt(0) as? Chip)?.isChecked = true
                             }
                         }
                     } else {
-                        Log.d("HomeActivity_Filter", "'Tümü' chip'i seçili veya selectedChipText null.")
                     }
                 } else {
-                    Log.w("HomeActivity_Filter", "ID $checkedChipId olan seçili chip ChipGroup içinde bulunamadı.")
                 }
             } else if (chipGroup.childCount > 0 && (checkedChipId == View.NO_ID || checkedChipId == -1)) {
-                Log.d("HomeActivity_Filter", "Chip seçili değil veya geçersiz ID, 'Tümü' (ilk chip) seçili olduğundan emin olunuyor.")
                 (chipGroup.getChildAt(0) as? Chip)?.isChecked = true
             }
 
@@ -383,13 +360,11 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
                 }
             }
         } else {
-            Log.d("HomeActivity_Filter", "ChipGroup görünür DEĞİL. Kategori filtresi atlanıyor.")
         }
 
         val currentQuery = searchView.query?.toString()
         if (!currentQuery.isNullOrBlank()) {
             val queryLower = currentQuery.lowercase()
-            Log.d("HomeActivity_Filter", "Arama sorgusuna göre filtreleniyor: $queryLower")
             filteredList = filteredList.filter { loginData ->
                 val isItemNameMatch = loginData.itemName?.lowercase()?.contains(queryLower) ?: false
                 val isUserNameMatch = loginData.userName?.lowercase()?.contains(queryLower) ?: false
@@ -400,14 +375,11 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
         }
 
         if (adapter == null) {
-            adapter = LoginDataAdapter(filteredList)
+            adapter = loginDataAdapter
             binding.dataList.layoutManager = LinearLayoutManager(this)
             binding.dataList.adapter = adapter
-            Log.d("HomeActivity_Filter", "Liste boyutu ile adaptör oluşturuldu: ${filteredList.size}")
-        } else {
-            adapter?.setData(filteredList)
-            Log.d("HomeActivity_Filter", "Adaptör verileri liste boyutu ile güncellendi: ${filteredList.size}")
         }
+        adapter?.setData(filteredList)
 
         val isFinalListEmpty = filteredList.isEmpty()
         val isSearchCurrentlyActive = !currentQuery.isNullOrBlank()
@@ -417,7 +389,6 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
             binding.dataList.visibility = View.GONE
             binding.homeImage.visibility = View.VISIBLE
             binding.noData.visibility = View.VISIBLE
-            Log.d("HomeActivity_Filter", "Nihai liste boş. Arama aktif: $isSearchCurrentlyActive, Kategori seçili: $isSpecificCategoryCurrentlySelected")
 
             when {
                 isSearchCurrentlyActive && isSpecificCategoryCurrentlySelected -> {
@@ -437,7 +408,6 @@ class HomeActivity : AppCompatActivity(), ViewModelStoreOwner {
             binding.dataList.visibility = View.VISIBLE
             binding.homeImage.visibility = View.GONE
             binding.noData.visibility = View.GONE
-            Log.d("HomeActivity_Filter", "Nihai liste boş DEĞİL. Boyut: ${filteredList.size}")
         }
     }
 

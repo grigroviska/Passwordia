@@ -106,7 +106,8 @@ class CreateAuthenticator : AppCompatActivity() {
                 itemName = null,
                 category = null,
                 accountName = accountName,
-                totpKey = secretKey
+                totpKey = secretKey,
+                isFavorite = false
             )
             loginViewModel.insert(newLoginData)
             finish()

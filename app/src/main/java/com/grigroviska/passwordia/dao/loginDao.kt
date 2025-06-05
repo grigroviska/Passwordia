@@ -36,4 +36,7 @@ interface loginDao {
     @Query("SELECT DISTINCT category FROM passwordia_database WHERE category IS NOT NULL AND category != ''")
     fun getAllCategories(): LiveData<List<String>>
 
+    @Query("UPDATE passwordia_database SET isFavorite = :isFavorite WHERE id = :loginId")
+    suspend fun updateFavoriteStatus(loginId: Int, isFavorite: Boolean)
+
 }

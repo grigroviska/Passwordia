@@ -62,7 +62,8 @@ class CreateLoginData : AppCompatActivity(), PasswordGeneratorDialogListener {
                                     updatedWebsite,
                                     updatedNotes,
                                     updatedItemName,
-                                    selectedCategories.joinToString(", ")
+                                    selectedCategories.joinToString(", "),
+                                    isFavorite = false
                                 )
                                 loginViewModel.update(updatedLoginData)
                                 finish()
@@ -111,7 +112,8 @@ class CreateLoginData : AppCompatActivity(), PasswordGeneratorDialogListener {
                 website,
                 notes,
                 itemName,
-                selectedCategories.joinToString(", ")
+                selectedCategories.joinToString(", "),
+                isFavorite = false
             )
 
             loginViewModel.insert(loginData)
